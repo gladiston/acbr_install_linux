@@ -38,7 +38,7 @@ Este script automatiza a instalação de pacotes ACBr no Lazarus e recompila a I
 ## Notas
 
 - Após a execução bem-sucedida do script, abra o Lazarus e vá até `Pacotes -> Instalar/Desinstalar Pacotes`, depois selecione e instale os pacotes ACBr no painel da direita.
-- O script utiliza `eval` para executar comandos com tratamento adequado para argumentos que contêm espaços.
+- Novos pacotes possivelmente deverão ser acrescentados, até a data deste script tentei acrescentar todos os pacotes que não tinham como dependencia algo que não fosse opensource, por exemplo, pacotes dependentes do FastReport, RaveReports e ReportBuilder.
 
 ## Licença
 
