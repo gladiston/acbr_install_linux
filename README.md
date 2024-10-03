@@ -16,6 +16,7 @@ Este script automatiza a instalação de pacotes ACBr no Lazarus e recompila a I
    ```
    git clone https://github.com/gladiston/acbr_install_linux.git
    cd acbr_install_linux
+   chmod a+x acbr_install.sh
    ```
 
 2. **Executar o Script**:
