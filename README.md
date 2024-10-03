@@ -3,7 +3,7 @@
 
 ## Visão Geral
 
-Este script automatiza a instalação de pacotes ACBr no Lazarus e recompila a IDE do Lazarus. Ele garante que as dependências necessárias sejam instaladas, realiza a instalação dos pacotes ACBr e recompila a IDE do Lazarus utilizando `qt5` como widgetset.
+Este script automatiza a instalação de pacotes ACBr no Lazarus e recompila a IDE do Lazarus. Ele garante que as dependências necessárias sejam instaladas, realiza a instalação dos pacotes ACBr e recompila a IDE do Lazarus utilizando `qt5` como widgetset ou facilmente ajustar dentro do script para manter gtk2. O script é altamente comentado caso queira acertar alguns parametros à sua necessidade.
 
 ## Requisitos
 
