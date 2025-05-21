@@ -155,7 +155,7 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrSATWS/ACBr_SATWS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/ACBr_SAT.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/ACBrECFVirtualSAT/acbr_sat_ecfvirtual.lpk"  
-  #"trunk2/Pacotes/Lazarus/ACBrSAT/Extrato/EscPos/ACBr_SAT_Extrato_ESCPOS.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrSAT/Extrato/EscPos/ACBr_SAT_Extrato_ESCPOS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/Extrato/FPDF/ACBr_SAT_Extrato_FPDF.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/Extrato/Fortes/ACBr_SAT_Extrato_Fortes.lpk"
   
@@ -166,7 +166,7 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrDebitoAutomatico/ACBr_DebitoAutomatico.lpk"    
   "trunk2/Pacotes/Lazarus/ACBrBoleto/FC/FPDF/ACBr_BoletoFC_FPDF.lpk"
   "trunk2/Pacotes/Lazarus/ACBrBoleto/FC/Fortes/ACBr_BoletoFC_Fortes.lpk"
-  #"trunk2/Pacotes/Lazarus/ACBrBoleto/FC/Laz/ACBr_BoletoFC_LazReport.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrBoleto/FC/Laz/ACBr_BoletoFC_LazReport.lpk"
 
   # Fiscais
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrBPe/ACBr_BPe.lpk"
@@ -176,7 +176,7 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFSe/ACBr_NFSe.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/ACBr_NFe.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrANe/ACBr_ANe.lpk"
-  #"trunk2/Pacotes/Lazarus/ACBrDFe/ACBrBPe/DABPE/EscPos/ACBr_BPeDabpeESCPOS.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrBPe/DABPE/EscPos/ACBr_BPeDabpeESCPOS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrBlocoX/ACBr_BlocoX.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrCIOT/ACBr_CIOT.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrCTe/DACTE/Fortes/ACBr_CTe_DACTeRL.lpk"
@@ -185,11 +185,11 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrDFeReportRL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/ACBr_GNRE.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/GNRE/Fortes/ACBr_GNREGuiaRL.lpk"
-  #"trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/GNRE/Laz/ACBr_GNREGuiaLazReport.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/GNRE/Laz/ACBr_GNREGuiaLazReport.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGTIN/ACBr_GTIN.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrMDFe/DAMDFE/Fortes/ACBr_MDFe_DAMDFeRL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/ACBr_NF3e.lpk"
-  #"trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/DANF3e/EscPos/ACBr_NF3e_DANF3eESCPOS.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/DANF3e/EscPos/ACBr_NF3e_DANF3eESCPOS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/DANF3e/Fortes/ACBr_NF3e_DANF3ERL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFCom/ACBr_NFCom.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFCom/DANFCom/Fortes/ACBr_NFCom_DANFComRL.lpk"
@@ -198,10 +198,10 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/DANFSE/FPDF/ACBr_NFSeXDanfseFPDF.lpk"
   #"trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/DANFSE/Fast/ACBr_NFSeXDanfseFR.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/DANFSE/Fortes/ACBr_NFSeXDanfseRL.lpk"
-  #"trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFCe/EscPos/ACBr_NFe_DanfeESCPOS.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFCe/EscPos/ACBr_NFe_DanfeESCPOS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFe/FPDF/ACBr_NFe_DanfeFPDF.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFe/Fortes/ACBr_NFe_DanfeRL.lpk"
-  #"trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFe/Laz/ACBr_NFe_Danfe_LazReport.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFe/Laz/ACBr_NFe_Danfe_LazReport.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrONE/ACBr_ONE.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrPAFNFCe/ACBr_PAFNFCe.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrReinf/ACBr_Reinf.lpk"
@@ -327,7 +327,7 @@ vlaz_build_widgetset=""
 vlaz_build_mode="--build-mode='Normal IDE'"
 vlaz_build_pcp=""
 
-echo "Você deseja incluir suporte ao FastReport Comunity Edition(s/n)?"
+echo "Você deseja incluir suporte ao FortesReport Comunity Edition(s/n)?"
 echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
 read frce_sn
 if [[ "$frce_sn" =~ ^[Ss]$ ]]; then
@@ -354,10 +354,10 @@ fi
 echo "Você deseja incluir suporte ao "EscPos" (s/n)?"
 echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
 read escpos_sn
-if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
+#if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
   # usuário confirmou com S ou s
   #PACKAGES_DEPS+=("fpdf")
-fi
+#fi
 
 echo "Você faz uso do parametro --pcp para carregar o Lazarus(s/n)?"
 echo "Caso esteja usando o gpcupdeluxe, a resposta deve ser "S" para sim"
