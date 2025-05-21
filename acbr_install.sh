@@ -214,10 +214,17 @@ LPK_FILES=(
 # Pacotes que devem ficar por ultimos
 LPK_ULTIMOS=()
 
+log "=============================================="
+log "🛠️ Instalador do ACBr para Linux"
+log "📦 Homologado para sistemas Debian-like (Ubuntu, Mint, etc.)"
+log "🔧 Desenvolvido para facilitar a instalação e integração"
+log "=============================================="
+
+
 # Impede que o script seja executado como root ou com sudo
 if [ "$EUID" -eq 0 ]; then
   log "❌ Este script não deve ser executado como root ou com sudo."
-  log "   Por favor, execute como usuário normal."
+  log ".  Por favor, execute como usuário normal."
   exit 1
 fi
 
@@ -227,7 +234,7 @@ if ! dpkg -s mingw-w64 >/dev/null 2>&1; then
   echo "⚠️  O pacote 'mingw-w64' não está instalado."
   echo ""
   echo "ℹ️  O 'mingw-w64' é um conjunto de ferramentas que permite compilar programas para Windows a partir do Linux."
-  echo "    Ele é necessário porque o ACBr utiliza utilitários como o 'windres', que fazem parte desse pacote."
+  echo ".   Ele é necessário porque o ACBr utiliza utilitários como o 'windres', que fazem parte desse pacote."
   echo ""
   echo -n "Deseja instalar o mingw-w64 agora? (s/N): "
   read resposta
@@ -305,10 +312,10 @@ fi
 if [ ! -d "$vacbr_path/trunk2" ]; then
   log "❌ O diretório '$vacbr_path/trunk2' não existe."
   log "💡 Para clonar o repositório ACBr, execute o seguinte comando:"
-  log ""
-  log "    mkdir $vacbr_path/acbr"
-  log "    cd $vacbr_path/acbr"
-  log "    svn checkout https://svn.code.sf.net/p/acbr/code/trunk2"
+  log "."
+  log ".   mkdir $vacbr_path/acbr"
+  log ".   cd $vacbr_path/acbr"
+  log ".   svn checkout https://svn.code.sf.net/p/acbr/code/trunk2"
   log ""
   exit 1
 fi
@@ -360,7 +367,7 @@ read escpos_sn
 #fi
 
 echo "Você faz uso do parametro --pcp para carregar o Lazarus(s/n)?"
-echo "Caso esteja usando o gpcupdeluxe, a resposta deve ser "S" para sim"
+echo "Caso esteja usando o fpcupdeluxe, a resposta deve ser "S" para sim"
 read resposta
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
   # usuário confirmou com S ou s
@@ -416,7 +423,7 @@ for LPK in "${LPK_FILES[@]}"; do
     fi    
   else
     log "❌ Pacote não encontrado: $full_path"
-    log "   Verifique se o repositório ACBr foi baixado corretamente."
+    log ".  Verifique se o repositório ACBr foi baixado corretamente."
     exit 1
   fi
 done
@@ -502,7 +509,7 @@ else
 fi
 
 # Instala os pacotes que foram deixados por ultimo, geralmente relatorios
-log "⚙️ Instala os pacotes que foram deixados por ultimo, geralmente relatorios..."
+log "⚙️ Instalando os pacotes que precisam ser deixados por ultimo, geralmente relatorios..."
 vcaptura_erro=""
 for LPK in "${LPK_ULTIMOS[@]}"; do
   full_path="${LPK}"
