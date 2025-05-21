@@ -67,9 +67,24 @@ is_report_package() {
   return 1
 }
 
-
 log() {
   echo "$*" | tee -a "$vlog"
+}
+
+install_windres() {
+  if [ ! -f /usr/bin/windres ]; then
+    log "Arquivo /usr/bin/windres não encontrado. Criando link simbólico..."
+    if [ -f /usr/bin/x86_64-w64-mingw32-windres ]; then
+      sudo ln -s /usr/bin/x86_64-w64-mingw32-windres /usr/bin/windres
+    else
+      log "Você não possui o arquivo /usr/bin/x86_64-w64-mingw32-windres, normalmente instalado com o 'mingw-w64'."
+    fi
+  fi
+  if [ -f /usr/bin/windres ]; then
+    return 0
+  else
+    return 2
+  fi
 }
 
 CheckInstalled() {
@@ -94,7 +109,6 @@ CheckInstalled() {
 # INICIO DO SCRIPT
 #
 
-# Minhas variaiveis e listas que podem ser modificadas
 # Lista de pacotes obrigatórios para o Lazarus
 # Haverá mais de um nome para o mesmo pacote porque o 
 # OPM e fpcupdeluxe divergem no nome
@@ -115,7 +129,8 @@ vlog="$(basename "$0").log"
 vinicio=$(date "+%Y-%m-%d %H:%M:%S")
 echo "log criado em $vinicio" > "$vlog"
 
-# Lista de pacotes de runtime que devem ser ignorados
+# Lista de pacotes de runtime que devem ser compilados, 
+# mas nunca instalados
 RUNTIME_PACKAGES=(
   #"trunk2/Pacotes/Lazarus/synapse/laz_synapse.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDiversos/ACBrDiversos.lpk"
@@ -123,7 +138,8 @@ RUNTIME_PACKAGES=(
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrTXTComum.lpk"
 )
 
-# Lista de pacotes extraída do arquivo de configuração
+# Lista de pacotes extraída por meio de:
+# find trunk2/Pacotes/Lazarus -name "*.lpk" | sort
 LPK_FILES=(
   # Outros
   "trunk2/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"
@@ -211,7 +227,11 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrPIXCD/ACBr_PIXCD.lpk"  
 )
 
-# Pacotes que devem ficar por ultimos
+# Pacotes que devem ficar por ultimos, geralmente relatorios
+# A lista por enquanto começa vazia, e durante a varredura
+# incluirá os relatorios, deixando-os por ultima, acredite 
+# ou nao, os relatorios do ACBr tem dependencia com as classes
+# que precisam ser instaladas primeiro.
 LPK_ULTIMOS=()
 
 log "=============================================="
@@ -226,29 +246,6 @@ if [ "$EUID" -eq 0 ]; then
   log "❌ Este script não deve ser executado como root ou com sudo."
   log ".  Por favor, execute como usuário normal."
   exit 1
-fi
-
-
-# Verifica se o pacote mingw-w64 está instalado
-if ! dpkg -s mingw-w64 >/dev/null 2>&1; then
-  echo "⚠️  O pacote 'mingw-w64' não está instalado."
-  echo ""
-  echo "ℹ️  O 'mingw-w64' é um conjunto de ferramentas que permite compilar programas para Windows a partir do Linux."
-  echo ".   Ele é necessário porque o ACBr utiliza utilitários como o 'windres', que fazem parte desse pacote."
-  echo ""
-  echo -n "Deseja instalar o mingw-w64 agora? (s/N): "
-  read resposta
-  if [[ "$resposta" =~ ^[Ss]$ ]]; then
-    echo "🔧 Instalando mingw-w64..."
-    sudo apt update && sudo apt install -y mingw-w64
-    if [ $? -ne 0 ]; then
-      log "❌ Falha ao instalar o pacote mingw-w64. Verifique sua conexão ou permissões."
-      exit 1
-    fi
-  else
-    log "🚫 Instalação do mingw-w64 cancelada. Encerrando o script."
-    exit 1
-  fi
 fi
 
 # Verifica se o comando svn está disponível
@@ -266,18 +263,6 @@ if ! command -v svn >/dev/null 2>&1; then
   else
     log "🚫 Instalação do Subversion cancelada. Encerrando o script."
     exit 1
-  fi
-fi
-
-
-# Verificar se o arquivo /usr/bin/windres existe
-if [ ! -f /usr/bin/windres ]; then
-  echo "Arquivo /usr/bin/windres não encontrado. Criando link simbólico..."
-  if [ -f /usr/bin/x86_64-w64-mingw32-windres ]; then
-    sudo ln -s /usr/bin/x86_64-w64-mingw32-windres /usr/bin/windres
-  else
-    log "Você não possui o arquivo /usr/bin/x86_64-w64-mingw32-windres, normalmente instalado com o 'mingw-w64'."
-    exit 2
   fi
 fi
 
@@ -382,6 +367,34 @@ if [[ "$resposta" =~ ^[Ss]$ ]]; then
 
   if [ -n "$resposta" ]; then
     vlaz_build_pcp=" --pcp=\"$resposta\""
+  fi
+fi
+
+# Verificar se o arquivo /usr/bin/windres existe
+# Aqui tá uma coisa que eu não gosto, instalar suporte
+# a 32bits por causa de apenas um componente.
+# Ignore a instalação deste tipo de suporte e alguns 
+# componentes não serão instalados.
+install_windres
+
+if [ ! -f /usr/bin/windres ]; then
+  echo "Você deseja incluir suporte a componentes ligados ao windres(s/n)?"
+  echo "windres é um utilitario que ajuda converter os arquivos de recursos(geralmente .rc) tipico de Windows/Delphi para Lazarus"
+  echo "Acho sua instalação detestável porque ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir seu sistema, porém sem ele, alguns componentes do ACBr não compilam."
+  read windres_sn
+  if [[ "$windres_sn" =~ ^[Ss]$ ]]; then
+    echo "🔧 Instalando mingw-w64..."
+    sudo apt update && sudo apt install -y mingw-w64
+    if [ $? -ne 0 ]; then
+      log "❌ Falha ao instalar o pacote mingw-w64. Verifique sua conexão ou permissões."
+      exit 1
+    else
+      install_windres
+      if [ $? -ne 0 ]; then
+        log "❌ Falha ao criar link simbolico para /usr/bin/windres. Verifique permissões."
+        exit 2
+      fi  
+    fi
   fi
 fi
 
