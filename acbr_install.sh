@@ -30,6 +30,10 @@
 # Funcoes
 #
 
+log() {
+  echo "$*" | tee -a "$vlog"
+}
+
 # Função para verificar se o pacote é de runtime
 # retorna 0 se $1 é um  pacote de runtime
 is_runtime_package() {
@@ -65,10 +69,6 @@ is_report_package() {
     return 0 # fortes
   fi  
   return 1
-}
-
-log() {
-  echo "$*" | tee -a "$vlog"
 }
 
 install_windres() {
