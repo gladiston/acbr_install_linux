@@ -11,7 +11,7 @@
 # como o segundo parâmetro.
 #
 # Exemplo de execução:
-# ./acbr_install.sh /onde/esta/o/lazarus /onde/esta/acbr/pacotes
+# ./acbr_install.sh /onde/esta/o/lazarus /onde/esta/o/repositorio/acbr
 #
 # O script irá:
 # 1. Verificar se o diretório fornecido contém o binário "lazarus".
@@ -143,6 +143,7 @@ RUNTIME_PACKAGES=(
 LPK_FILES=(
   # Outros
   "trunk2/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"
+  "trunk2/Pacotes/Lazarus/PCNComum/PCNComum.lpk"  
   "trunk2/Pacotes/Lazarus/ACBrDiversos/ACBrDiversos.lpk"
   "trunk2/Pacotes/Lazarus/ACBrIntegrador/ACBr_Integrador.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSerial/ACBrSerial.lpk"
@@ -156,12 +157,11 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrSEF2/ACBr_SEF2.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrSPED/ACBr_SPED.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrSintegra/ACBr_Sintegra.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrBaaS/ACBrBaaS.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrOpenDelivery/ACBr_OpenDelivery.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrPagFor/ACBr_PagFor.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrOFX/acbr_ofx.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrTXTComum.lpk"
-  "trunk2/Pacotes/Lazarus/PCNComum/PCNComum.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrBaaS/ACBrBaaS.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrOpenDelivery/ACBr_OpenDelivery.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrPagFor/ACBr_PagFor.lpk"  
     
   # Comercio
   "trunk2/Pacotes/Lazarus/ACBrTCP/ACBrTCP.lpk"
@@ -269,14 +269,14 @@ fi
 # Verifica se o primeiro parâmetro (vlaz_dir) foi fornecido
 if [ -z "$1" ]; then
   log "Erro: O caminho para o diretório do Lazarus (vlaz_dir) deve ser fornecido como o primeiro parâmetro. Exemplo:"
-  log "$0 $HOME/fpcupdeluxe/lazarus/ $HOME/pascal_lib/ACBr/"
+  log "$0 $HOME/fpcupdeluxe/lazarus/ $HOME/pascal_lib/acbr/"
   exit 1
 fi
 
 # Verifica se o segundo parâmetro (vacbr_path) foi fornecido
 if [ -z "$2" ]; then
   log "Erro: O caminho para os pacotes ACBr (vacbr_path) deve ser fornecido como o segundo parâmetro. Exemplo:"
-  log "$0 $HOME/fpcupdeluxe/lazarus/ $HOME/pascal_lib/ACBr/"
+  log "$0 $HOME/fpcupdeluxe/lazarus/ $HOME/pascal_lib/acbr/"
   exit 1
 fi
 
