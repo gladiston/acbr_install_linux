@@ -386,7 +386,7 @@ echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
 echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read fpdf_sn
-if [[ "$lazreport_sn" =~ ^[Ss]$ ]]; then
+if [[ "$fpdf_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos do fpdf"
 fi
 
@@ -396,7 +396,7 @@ echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
 echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read escpos_sn
-if [[ "$lazreport_sn" =~ ^[Ss]$ ]]; then
+if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos que usam escpos"
 fi
 
