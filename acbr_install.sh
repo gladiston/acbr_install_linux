@@ -658,9 +658,9 @@ log "⚙️ Recompilando o Lazarus IDE..."
 
 # Executa o comando de compilação com o uso de eval para garantir que as aspas sejam tratadas corretamente
 cmd_exec="$vlaz_build $vlaz_build_ide $vlaz_build_widgetset $vlaz_build_mode"
-log "========"
+log "──────────────────────────────────────────────"
 log "$cmd_exec"
-log "========"
+log "──────────────────────────────────────────────"
 eval "$cmd_exec"
 
 if [ $? -ne 0 ]; then
