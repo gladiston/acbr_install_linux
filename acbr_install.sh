@@ -1,7 +1,7 @@
 #!/bin/bash
 # Autor: Gladiston Santana <gladiston.santana[at]gmail[dot]com>
 # Criação: 03 de outubro de 2024
-# Atualizado em: 21 de Maio de 2025
+# Atualizado em: 22 de Maio de 2025
 # Licença: MIT
 #
 # Instruções de execução:
