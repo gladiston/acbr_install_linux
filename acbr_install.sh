@@ -262,20 +262,12 @@ fi
 
 # Verifica se o comando svn está disponível
 if ! command -v svn >/dev/null 2>&1; then
-  echo "⚠️  O comando 'svn' não foi encontrado."
-  echo -n "Deseja instalar o Subversion agora? (s/N): "
-  read resposta
-  if [[ "$resposta" =~ ^[Ss]$ ]]; then
-    log 📦 "🔧 Instalando subversion..."
-    sudo apt update && sudo apt install -y subversion
-    if [ $? -ne 0 ]; then
-      log "❌ Falha ao instalar o Subversion. Verifique sua conexão ou permissões."
-      exit 1
-    fi
-  else
-    log "🚫 Instalação do Subversion cancelada. Encerrando o script."
-    exit 1
-  fi
+  log "⚠️  O comando 'svn' não foi encontrado."
+  log "💡 Para instalaalá-lo, execute:"
+  log ""
+  log "❯  sudo apt update"
+  log "❯  sudo apt install -y subversion"
+  log ""
 fi
 
 # Verifica se o primeiro parâmetro (vlaz_dir) foi fornecido
