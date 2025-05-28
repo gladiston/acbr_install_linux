@@ -443,9 +443,11 @@ fi
 install_windres
 
 if [ ! -f /usr/bin/windres ]; then
-  echo "❓Você deseja incluir suporte a componentes ligados ao windres(s/n)?"
-  echo "windres é um utilitario que ajuda converter os arquivos de recursos(geralmente .rc) tipico de Windows/Delphi para Lazarus"
-  echo "⚠️ Ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir seu sistema, porém sem ele, alguns componentes do ACBr não compilam."
+  log "❌ Você não possui o windres instalado!"
+  log "O utilitario windres é requerido para converter os arquivos de recursos(geralmente .rc) tipico de Windows/Delphi para o formato moderno usado pelo Lazarus"
+  log "⚠️ Ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir um pouco o seu sistema, porém sem ele, alguns componentes do ACBr podem não compilar."
+  log ""  
+  
   read windres_sn
   if [[ "$windres_sn" =~ ^[Ss]$ ]]; then
     echo "📦 Instalando mingw-w64..."
