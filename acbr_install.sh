@@ -263,7 +263,7 @@ fi
 # Verifica se o comando svn está disponível
 if ! command -v svn >/dev/null 2>&1; then
   log "⚠️  O comando 'svn' não foi encontrado."
-  log "💡 Para instalaalá-lo, execute:"
+  log "💡 Para instalar, execute:"
   log ""
   log "❯  sudo apt update"
   log "❯  sudo apt install -y subversion"
@@ -273,14 +273,14 @@ fi
 # Verifica se o primeiro parâmetro (vlaz_dir) foi fornecido
 if [ -z "$1" ]; then
   log "Erro: O caminho para o diretório do Lazarus (vlaz_dir) deve ser fornecido como o primeiro parâmetro. Exemplo:"
-  log "$0 $HOME/fpcupdeluxe/lazarus/ $HOME/pascal_lib/acbr/"
+  log "$0 $HOME/fpcupdeluxe/lazarus $HOME/pascal_lib/acbr"
   exit 1
 fi
 
 # Verifica se o segundo parâmetro (vacbr_path) foi fornecido
 if [ -z "$2" ]; then
   log "Erro: O caminho para os pacotes ACBr (vacbr_path) deve ser fornecido como o segundo parâmetro. Exemplo:"
-  log "$0 $HOME/fpcupdeluxe/lazarus/ $HOME/pascal_lib/acbr/"
+  log "$0 $HOME/fpcupdeluxe/lazarus $HOME/pascal_lib/acbr"
   exit 1
 fi
 
