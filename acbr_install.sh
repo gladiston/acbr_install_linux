@@ -400,6 +400,7 @@ fi
 echo "────────── 🧩 COMPONENTES VISUAIS 🧩 ─────────"
 echo "Você deseja reconstruir a IDE do Lazarus usando widgets diferentes do gtk?"
 echo "Neste caso digite uma das opções: qt, qt4, qt5, qt6"
+echo "Apenas pressione [ENTER] se quiser prosseguir usando o padrão"
 echo -n "❯ "
 read resp_widget
 if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
@@ -420,9 +421,7 @@ echo "⚠️ IMPORTANTE: Caso o Lazarus tenha sido instalado usando o fpcupdelux
 echo -n "❯ "
 read resposta
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
-  # usuário confirmou com S ou s
   vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""  
-  echo "─────── 🛠️ DIRETORIO DE CONFIGURAÇÃO 🛠️ ──────"
   echo "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá: 📂 $vlaz_build_pcp"  
   echo -n "❯ "
   read resposta
@@ -448,7 +447,7 @@ fi
 install_windres
 
 if [ ! -f /usr/bin/windres ]; then
-  log "─────── 🛠️ WINDRES e pacote MINGW-W64 🛠️ ──────"
+  log "─────── 📦  Pacote MINGW-W64 📦 ──────"
   log "❌ Você não possui o windres instalado!"
   log "O utilitario windres é requerido para converter os arquivos de recursos(geralmente .rc) tipico de Windows/Delphi para o formato moderno usado pelo Lazarus"
   log "⚠️ Ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir um pouco o seu sistema, porém sem ele, alguns componentes do ACBr podem não compilar."
