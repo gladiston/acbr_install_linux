@@ -325,10 +325,10 @@ vlaz_build_ide="--build-ide= "
 vlaz_build_widgetset=""
 vlaz_build_mode="--build-mode='Normal IDE'"
 vlaz_build_pcp=""
-echo ""
-echo "─────────────── 🛒 COMERCIO 🛒 ───────────────"
-echo "Você deseja incluir os componentes categorizados como comercio?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log ""
+log "─────────────── 🛒 COMERCIO 🛒 ───────────────"
+log "Você deseja incluir os componentes categorizados como comercio?"
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read resposta
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
@@ -336,9 +336,9 @@ if [[ "$resposta" =~ ^[Ss]$ ]]; then
   LPK_FILES+=("${LPK_COMERCIO[@]}")
 fi
 
-echo "────────────── 💰 FINANCEIRO 💰 ──────────────"
-echo "Você deseja incluir os componentes categorizados como financeiro?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log "────────────── 💰 FINANCEIRO 💰 ──────────────"
+log "Você deseja incluir os componentes categorizados como financeiro?"
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read resposta
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
@@ -346,9 +346,9 @@ if [[ "$resposta" =~ ^[Ss]$ ]]; then
   LPK_FILES+=("${LPK_FINANCEIRO[@]}")
 fi
 
-echo "──────────────── 🧾 FISCAL 🧾 ────────────────"
-echo "Você deseja incluir os componentes categorizados como fiscal?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log "──────────────── 🧾 FISCAL 🧾 ────────────────"
+log "Você deseja incluir os componentes categorizados como fiscal?"
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read resposta
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
@@ -356,10 +356,10 @@ if [[ "$resposta" =~ ^[Ss]$ ]]; then
   LPK_FILES+=("${LPK_FISCAL[@]}")
 fi
 
-echo "──────────── 🖨️ FORTES REPORT 🖨️ ─────────────"
-echo "Você deseja incluir os formularios/impressos que usam o 'FortesReport Comunity Edition?'"
-echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log "──────────── 🖨️ FORTES REPORT 🖨️ ─────────────"
+log "Você deseja incluir os formularios/impressos que usam o 'FortesReport Comunity Edition?'"
+log "Em caso positivo, poderei instalar os relatorios que utilizam ele."
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read frce_sn
 if [[ "$frce_sn" =~ ^[Ss]$ ]]; then
@@ -367,9 +367,9 @@ if [[ "$frce_sn" =~ ^[Ss]$ ]]; then
   PACKAGES_DEPS+=("frce")
 fi
 
-echo "─────────────── 🖨️ LAZREPORT 🖨️ ──────────────"
-echo "Você deseja incluir os formularios/impressos que usam o 'LazReport'?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log "─────────────── 🖨️ LAZREPORT 🖨️ ──────────────"
+log "Você deseja incluir os formularios/impressos que usam o 'LazReport'?"
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read lazreport_sn
 if [[ "$lazreport_sn" =~ ^[Ss]$ ]]; then
@@ -377,30 +377,30 @@ if [[ "$lazreport_sn" =~ ^[Ss]$ ]]; then
   PACKAGES_DEPS+=("lazfpreportdesign")
 fi
 
-echo "───────────────── 💾 FPDF 💾 ─────────────────"
-echo "Você deseja incluir os formularios/impressos que usam 'FPDF'?"
-echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log "───────────────── 💾 FPDF 💾 ─────────────────"
+log "Você deseja incluir os formularios/impressos que usam 'FPDF'?"
+log "Em caso positivo, poderei instalar os relatorios que utilizam ele."
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read fpdf_sn
 if [[ "$fpdf_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos do fpdf"
 fi
 
-echo "─────────── 🖨️ MATRICIAL ESC-POS 🖨️ ──────────"
-echo "Você deseja incluir suporte aos formularios/impressos que usam impressoras matriciais compativeis com 'EscPos'?"
-echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log "─────────── 🖨️ MATRICIAL ESC-POS 🖨️ ──────────"
+log "Você deseja incluir suporte aos formularios/impressos que usam impressoras matriciais compativeis com 'EscPos'?"
+log "Em caso positivo, poderei instalar os relatorios que utilizam ele."
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
 echo -n "❯ "
 read escpos_sn
 if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos que usam escpos"
 fi
 
-echo "────────── 🧩 COMPONENTES VISUAIS 🧩 ─────────"
-echo "Você deseja reconstruir a IDE do Lazarus usando widgets diferentes do gtk?"
-echo "Neste caso digite uma das opções: qt, qt4, qt5, qt6"
-echo "Apenas pressione [ENTER] se quiser prosseguir usando o padrão"
+log "────────── 🧩 COMPONENTES VISUAIS 🧩 ─────────"
+log "Você deseja reconstruir a IDE do Lazarus usando widgets diferentes do gtk?"
+log "Neste caso digite uma das opções: qt, qt4, qt5, qt6"
+log "Apenas pressione [ENTER] se quiser prosseguir usando o padrão"
 echo -n "❯ "
 read resp_widget
 if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
@@ -414,15 +414,15 @@ if [ ! -z "$resp_widget" ]; then
   vlaz_build_widgetset="--widgetset=$resp_widget "
 fi
 
-echo "─────── 🛠️ DIRETORIO DE CONFIGURAÇÃO 🛠️ ──────"
-echo "Você faz uso do parametro --pcp para carregar o Lazarus(s/n)?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo "⚠️ IMPORTANTE: Caso o Lazarus tenha sido instalado usando o fpcupdeluxe, a resposta deve ser 'S'."
+log "─────── 🛠️ DIRETORIO DE CONFIGURAÇÃO 🛠️ ──────"
+log "Você faz uso do parametro --pcp para carregar o Lazarus(s/n)?"
+log "(digite 's' para sim ou ENTER para prosseguir como não)'"
+log "⚠️ IMPORTANTE: Caso o Lazarus tenha sido instalado usando o fpcupdeluxe, a resposta deve ser 'S'."
 echo -n "❯ "
 read resposta
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
   vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""  
-  echo "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá: 📂 $vlaz_build_pcp"  
+  log "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá: 📂 $vlaz_build_pcp"  
   echo -n "❯ "
   read resposta
   if [[ "$resposta" =~ ^[Ss]$ ]]; then
