@@ -448,6 +448,7 @@ fi
 install_windres
 
 if [ ! -f /usr/bin/windres ]; then
+  log "─────── 🛠️ WINDRES e pacote MINGW-W64 🛠️ ──────"
   log "❌ Você não possui o windres instalado!"
   log "O utilitario windres é requerido para converter os arquivos de recursos(geralmente .rc) tipico de Windows/Delphi para o formato moderno usado pelo Lazarus"
   log "⚠️ Ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir um pouco o seu sistema, porém sem ele, alguns componentes do ACBr podem não compilar."
