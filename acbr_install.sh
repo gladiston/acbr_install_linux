@@ -216,8 +216,7 @@ LPK_FISCAL=(
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/DANF3e/EscPos/ACBr_NF3e_DANF3eESCPOS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/DANF3e/Fortes/ACBr_NF3e_DANF3ERL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFCom/ACBr_NFCom.lpk"
-  "trunk2/Pacotes/Lazarcd trunk2
-svn updateus/ACBrDFe/ACBrNFCom/DANFCom/Fortes/ACBr_NFCom_DANFComRL.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFCom/DANFCom/Fortes/ACBr_NFCom_DANFComRL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFSe/DANFSE/Fortes/ACBr_NFSe_DanfseRL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/ACBr_NFSeX.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/DANFSE/FPDF/ACBr_NFSeXDanfseFPDF.lpk"
