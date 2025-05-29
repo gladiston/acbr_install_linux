@@ -422,7 +422,8 @@ echo -n "❯ "
 read resposta
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
   vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""  
-  log "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá: 📂 $vlaz_build_pcp"  
+  log "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá:"
+  log "📂 $vlaz_build_pcp"  
   echo -n "❯ "
   read resposta
   if [[ "$resposta" =~ ^[Ss]$ ]]; then
