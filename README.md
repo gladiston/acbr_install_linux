@@ -41,7 +41,7 @@ Também foram adicionados os seguintes scripts:
 * lpkinstall-fortesreport-ce.sh: Caso tenha baixado o fortesreports-ce via git, use este script para executá-lo.
 Uma sugestão para organização melhor de pasta de trabalho:
 ```
-/work/pascal_lib  
+~/work/pascal_lib  
 ├── acbr  
 ├── fortesreport-ce  
 └── zeoslib  
