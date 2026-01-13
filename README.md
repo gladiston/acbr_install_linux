@@ -47,7 +47,7 @@ Uma sugestão para organização melhor de pasta de trabalho:
 └── zeoslib  
 (...)  
 lpkinstall-acbr.sh  
-lpkinstall-fortesreport-ce.sh  
+lpkinstall-frce.sh  
 lpkinstall-zeos.sh   
 ```
 **DICA**: Voce pode baixar novos pacotes do tipo `lpk` via git na mesma pasta `pascal_lib`, então use o script `lpkinstall-zeos.sh` para adaptá-lo ao novo pacote, este script é autoexplicativo com uma lista de pacotes que devem ser compilados(runtime) e o que devem ser instalados(design). O script para instalação do `lpkinstall-fortesreport-ce.sh` também pode ser instalado, no entanto, ele é mais simples porque é um único pacote de design-time.  
