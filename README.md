@@ -16,7 +16,7 @@ Este script automatiza a instalação de pacotes ACBr no Lazarus e recompila a I
    ```
    git clone https://github.com/gladiston/acbr_install_linux.git
    cd acbr_install_linux
-   chmod a+x acbr_install.sh
+   chmod a+x lpkinstall-acbr.sh
    ```
 
 2. **Executar o Script**:
@@ -27,13 +27,29 @@ Este script automatiza a instalação de pacotes ACBr no Lazarus e recompila a I
 
    Exemplo:
    ```
-   ./acbr_install.sh /caminho/para/lazarus /caminho/para/acbr
+   ./lpkinstall-acbr.sh /caminho/para/lazarus /caminho/para/acbr
    ```
 
    O script irá:
    - Verificar o pacote `mingw-w64` e instalá-lo, se necessário.
    - Criar um link simbólico para `/usr/bin/windres` se ele não existir.
    - Instalar todos os pacotes ACBr e recompilar a IDE do Lazarus utilizando o widgetset `qt5`.
+
+## Scripts adicionais
+Também foram adicionados os seguintes scripts:  
+* lpkinstall-zeos.sh: Caso tenha baixado o zeos via git, use este script para executá-lo.
+* lpkinstall-fortesreport-ce.sh: Caso tenha baixado o fortesreports-ce via git, use este script para executá-lo.
+Uma sugestão para organização melhor de pasta de trabalho:
+/work/pascal_lib
+├── acbr
+├── fortesreport-ce
+└── zeoslib
+(...)
+lpkinstall-acbr.sh
+lpkinstall-fortesreport-ce.sh
+lpkinstall-zeos.sh
+
+**DICA**: Voce pode baixar novos pacotes do tipo `lpk` via git na mesma pasta `pascal_lib`, então use o script `lpkinstall-zeos.sh` para adaptá-lo ao novo pacote, este script é autoexplicativo com uma lista de pacotes que devem ser compilados(runtime) e o que devem ser instalados(design). O script para instalação do `lpkinstall-fortesreport-ce.sh` também pode ser instalado, no entanto, ele é mais simples porque é um único pacote de design-time.  
 
 ## Notas
 
