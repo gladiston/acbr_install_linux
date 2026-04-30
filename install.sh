@@ -41,7 +41,7 @@ install_all() {
 while true; do
   echo
   echo "=============================================="
-  echo "Menu de serviços do Lazarus"
+  echo "Menu de instalação de pacotes do Lazarus"
   echo "=============================================="
   echo "1. Instalar os pactes basicos"
   echo "2. Instalar o Zeos(banco de dados)"
