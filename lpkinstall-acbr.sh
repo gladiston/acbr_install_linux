@@ -2,29 +2,17 @@
 # Autor: Gladiston Santana <gladiston.santana[at]gmail[dot]com>
 # Criação: 03 de outubro de 2024
 # Atualizado em: 22 de Maio de 2025
+# Modificado em: 09 de Fevereiro de 2026 (Autodetecção de pastas)
 # Licença: MIT
 #
 # Instruções de execução:
 # Este script realiza a instalação de pacotes ACBr no Lazarus e recompila o IDE.
-# Ele deve ser executado fornecendo o caminho para o diretório base do Lazarus
-# (vlaz_dir) como o primeiro parâmetro e o caminho para os pacotes ACBr (vacbr_path)
-# como o segundo parâmetro.
 #
-# Exemplo de execução:
-# ./acbr_install.sh /onde/esta/o/lazarus /onde/esta/o/repositorio/acbr
+# O script tentará detectar automaticamente o Lazarus.
+# O ACBr será mantido em: <pasta_lazarus>/components/acbr
+# Caso queira forçar o Lazarus:
+# ./acbr_install.sh [pasta_lazarus]
 #
-# O script irá:
-# 1. Verificar se o diretório fornecido contém o binário "lazarus".
-# 2. Instalar os pacotes especificados, ignorando os pacotes de runtime.
-# 3. Recompilar o Lazarus IDE.
-# 4. Verificar se o arquivo "lazarus" foi modificado após a recompilação.
-#    Se a data/hora não tiver mudado, o script reportará uma falha na recompilação.
-# 5. Depois de rodar o script e ele completar com sucesso, basta ir em 
-#    Packages->Install/Uninstall Packages e no painel da direita selecionar os pacotes
-#    ACBr para instalação.
-#
-# TODO: Melhorar a função is_runtime_package para detectar se um pacote é de runtime ou não
-# sem depender de uma lista pré-definida porque isso é POG.
 
 #
 # Funcoes
@@ -34,13 +22,30 @@ log() {
   echo "$*" | tee -a "$vlog"
 }
 
+check_lazarus_closed() {
+  local running
+
+  if ! command -v pgrep >/dev/null 2>&1; then
+    return 0
+  fi
+
+  running="$(pgrep -u "$(id -u)" -af '(^|/)(lazarus|startlazarus)([[:space:]]|$)' || true)"
+  if [ -n "$running" ]; then
+    log "Erro: a IDE Lazarus parece estar aberta."
+    log "Feche o Lazarus antes de instalar pacotes ou recompilar a IDE e execute este script novamente."
+    log ""
+    log "$running"
+    exit 1
+  fi
+}
+
 # Função para verificar se o pacote é de runtime
 # retorna 0 se $1 é um  pacote de runtime
 is_runtime_package() {
   local package=$1
   for runtime_pkg in "${RUNTIME_PACKAGES[@]}"; do
     if [[ "$package" == "$runtime_pkg" ]]; then
-      return 0 
+      return 0
     fi
   done
   return 1
@@ -50,24 +55,24 @@ is_runtime_package() {
 # retorna 0 se $1 é um  pacote de relatorio
 is_report_package() {
   local package=$1
-  if echo "$package" | grep -iq "/EscPos/"; then    
+  if echo "$package" | grep -iq "/EscPos/"; then
     return 0 # EscPos
   fi
-  if echo "$package" | grep -iq "/FPDF/"; then    
+  if echo "$package" | grep -iq "/FPDF/"; then
     return 0 # FPDF
   fi
-  if echo "$package" | grep -iq "/laz/"; then    
+  if echo "$package" | grep -iq "/laz/"; then
     return 0 # LazReport
   fi
-  if echo "$package" | grep -iq "/Fortes/"; then    
+  if echo "$package" | grep -iq "/Fortes/"; then
     return 0 # fortes
   fi
-  if echo "$package" | grep -iq "/Fast/"; then    
+  if echo "$package" | grep -iq "/Fast/"; then
     return 0 # Fastreport
   fi
-  if echo "$package" | grep -iq "ACBrDFeReportRL"; then    
+  if echo "$package" | grep -iq "ACBrDFeReportRL"; then
     return 0 # fortes
-  fi  
+  fi
   return 1
 }
 
@@ -110,9 +115,9 @@ CheckInstalled() {
 #
 
 # Lista de pacotes obrigatórios para o Lazarus
-# Haverá mais de um nome para o mesmo pacote porque o 
+# Haverá mais de um nome para o mesmo pacote porque o
 # OPM e fpcupdeluxe divergem no nome
-#   
+#
 # Stax.lpk(opm) ou Stax(staticpackages)
 # laz_synapse.lpk(opm) ou ????(staticpackages)
 # pack_powerpdf.lpk(opm) ou pack_powerpdf(staticpackages)
@@ -129,13 +134,17 @@ vlog="$(basename "$0").log"
 vinicio=$(date "+%Y-%m-%d %H:%M:%S")
 echo "log criado em $vinicio" > "$vlog"
 
-# Lista de pacotes de runtime que devem ser compilados, 
+# Lista de pacotes de runtime que devem ser compilados,
 # mas nunca instalados
 RUNTIME_PACKAGES=(
   "trunk2/Pacotes/Lazarus/synapse/laz_synapse.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrOpenSSL/ACBrOpenSSL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDiversos/ACBrDiversos.lpk"
   "trunk2/Pacotes/Lazarus/PCNComum/PCNComum.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrTXTComum.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrTCP/ACBrTCP.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrIntegrador/ACBr_Integrador.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrDFeComum.lpk"
 )
 
@@ -148,16 +157,16 @@ LPK_FILES=(
   "trunk2/Pacotes/Lazarus/ACBrOpenSSL/ACBrOpenSSL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDiversos/ACBrDiversos.lpk"
   "trunk2/Pacotes/Lazarus/PCNComum/PCNComum.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrSerial/ACBrSerial.lpk"  
+  "trunk2/Pacotes/Lazarus/ACBrSerial/ACBrSerial.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrTXTComum.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTCP/ACBrTCP.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTCP/ACBr_MTER.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTEFD/ACBr_TEFD.lpk"
   "trunk2/Pacotes/Lazarus/ACBrIntegrador/ACBr_Integrador.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrPIXCD/ACBr_PIXCD.lpk"  
+  "trunk2/Pacotes/Lazarus/ACBrPIXCD/ACBr_PIXCD.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrDFeComum.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrDFeReportRL.lpk"
-)   
+)
 LPK_COMERCIO=(
   # Comercio
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrADRCST/ACBr_ADRCST.lpk"
@@ -170,26 +179,26 @@ LPK_COMERCIO=(
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrPonto/ACBr_Ponto.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrSEF2/ACBr_SEF2.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrSintegra/ACBr_Sintegra.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrSPED/ACBr_SPED.lpk"  
+  "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrSPED/ACBr_SPED.lpk"
   "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrPAF/ACBr_PAF.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrSATWS/ACBr_SATWS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/ACBr_SAT.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrSAT/ACBrECFVirtualSAT/acbr_sat_ecfvirtual.lpk"  
+  "trunk2/Pacotes/Lazarus/ACBrSAT/ACBrECFVirtualSAT/acbr_sat_ecfvirtual.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/Extrato/EscPos/ACBr_SAT_Extrato_ESCPOS.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/Extrato/FPDF/ACBr_SAT_Extrato_FPDF.lpk"
   "trunk2/Pacotes/Lazarus/ACBrSAT/Extrato/Fortes/ACBr_SAT_Extrato_Fortes.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrOpenDelivery/ACBr_OpenDelivery.lpk" 
+  "trunk2/Pacotes/Lazarus/ACBrOpenDelivery/ACBr_OpenDelivery.lpk"
 )
 
-LPK_FINANCEIRO=(  
-  # Financeiro 
-  "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrOFX/acbr_ofx.lpk"    
+LPK_FINANCEIRO=(
+  # Financeiro
+  "trunk2/Pacotes/Lazarus/ACBrTXT/ACBrOFX/acbr_ofx.lpk"
   "trunk2/Pacotes/Lazarus/ACBrBoleto/ACBr_Boleto.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrDebitoAutomatico/ACBr_DebitoAutomatico.lpk"    
+  "trunk2/Pacotes/Lazarus/ACBrDebitoAutomatico/ACBr_DebitoAutomatico.lpk"
   "trunk2/Pacotes/Lazarus/ACBrBoleto/FC/FPDF/ACBr_BoletoFC_FPDF.lpk"
   "trunk2/Pacotes/Lazarus/ACBrBoleto/FC/Fortes/ACBr_BoletoFC_Fortes.lpk"
   "trunk2/Pacotes/Lazarus/ACBrBoleto/FC/Laz/ACBr_BoletoFC_LazReport.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrPagFor/ACBr_PagFor.lpk"    
+  "trunk2/Pacotes/Lazarus/ACBrPagFor/ACBr_PagFor.lpk"
 )
 
 LPK_FISCAL=(
@@ -206,7 +215,7 @@ LPK_FISCAL=(
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrCIOT/ACBr_CIOT.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrCTe/DACTE/Fortes/ACBr_CTe_DACTeRL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrDCe/ACBr_DCe.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrDCe/DACE/Fortes/ACBr_DCe_DACERL.lpk"  
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrDCe/DACE/Fortes/ACBr_DCe_DACERL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/ACBr_GNRE.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/GNRE/Fortes/ACBr_GNREGuiaRL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/GNRE/Laz/ACBr_GNREGuiaLazReport.lpk"
@@ -229,96 +238,288 @@ LPK_FISCAL=(
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrONE/ACBr_ONE.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrPAFNFCe/ACBr_PAFNFCe.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrReinf/ACBr_Reinf.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBreSocial/ACBre_Social.lpk"  
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBreSocial/ACBre_Social.lpk"
   "trunk2/Pacotes/Lazarus/ACBrBaaS/ACBrBaaS.lpk"
-  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/ACBrECFVirtualNFCe/acbr_nfce_ecfvirtual.lpk"  
+  "trunk2/Pacotes/Lazarus/ACBrDFe/ACBrNFe/ACBrECFVirtualNFCe/acbr_nfce_ecfvirtual.lpk"
 )
 
 
 # Pacotes que devem ficar por ultimos, geralmente relatorios
 # A lista por enquanto começa vazia, e durante a varredura
-# incluirá os relatorios, deixando-os por ultimo, acredite 
+# incluirá os relatorios, deixando-os por ultimo, acredite
 # ou nao, os relatorios do ACBr tem dependencia com as classes
 # que precisam ser instaladas primeiro e depois vem os relatorios.
 # Mas aquilo que nao é relatorio, mas deve ser jogado por ultimo,
 # deve ser incluido na lista abaixo.
 LPK_ULTIMOS=(
- 
+
 )
 
 log "──────────────────────────────────────────────"
-log "🛠️ Instalador do ACBr para Linux"
-log "📦 Homologado para sistemas Debian-like (Ubuntu, Mint, etc.)"
-log "🔧 Desenvolvido para facilitar a instalação e integração"
+log " Instalador do ACBr para Linux"
+log " Homologado para sistemas Debian-like (Ubuntu, Mint, etc.)"
+log " Desenvolvido para facilitar a instalação e integração"
 log "──────────────────────────────────────────────"
 
 
 # Impede que o script seja executado como root ou com sudo
 if [ "$EUID" -eq 0 ]; then
-  log "❌ Este script não deve ser executado como root ou com sudo."
+  log " Este script não deve ser executado como root ou com sudo."
   log ".  Por favor, execute como usuário normal."
   exit 1
 fi
 
 # Verifica se o comando svn está disponível
 if ! command -v svn >/dev/null 2>&1; then
-  echo "⚠️  O comando 'svn' não foi encontrado."
-  echo -n "Deseja instalar o Subversion agora? (s/N): "
+  echo "  O comando 'svn' não foi encontrado."
+  echo -n "Deseja instalar o Subversion agora? (S/n): "
   read resposta
+  resposta="${resposta:-S}"
   if [[ "$resposta" =~ ^[Ss]$ ]]; then
-    log 📦 "🔧 Instalando subversion..."
+    log " Instalando subversion..."
     sudo apt update && sudo apt install -y subversion
     if [ $? -ne 0 ]; then
-      log "❌ Falha ao instalar o Subversion. Verifique sua conexão ou permissões."
+      log " Falha ao instalar o Subversion. Verifique sua conexão ou permissões."
       exit 1
     fi
   else
-    log "🚫 Instalação do Subversion cancelada. Encerrando o script."
+    log " Instalação do Subversion cancelada. Encerrando o script."
     exit 1
   fi
 fi
 
-# Verifica se o primeiro parâmetro (vlaz_dir) foi fornecido
-if [ -z "$1" ]; then
-  log "Erro: O caminho para o diretório do Lazarus (vlaz_dir) deve ser fornecido como o primeiro parâmetro. Exemplo:"
-  log "$0 $HOME/fpcupdeluxe/lazarus/ $(pwd)/acbr/"
-  exit 1
-fi
+# ==============================================================================
+# INÍCIO DA LÓGICA DE DETECÇÃO (LAZARUS E ACBR)
+# ==============================================================================
 
-# Verifica se o segundo parâmetro (vacbr_path) foi fornecido
-if [ -z "$2" ]; then
-  log "Erro: O caminho para os pacotes ACBr (vacbr_path) deve ser fornecido como o segundo parâmetro. Exemplo:"
-  log "$0 $HOME/fpcupdeluxe/lazarus/ $(pwd)/acbr/"
-  exit 1
-fi
+# --- 1) Detecção da Pasta do Lazarus (vlaz_dir) ---
 
-# Define vlaz_dir e vacbr_path com base nos parâmetros
 vlaz_dir="$1"
-vacbr_path="$2"
 # Remove barra final, se houver
 vlaz_dir="${vlaz_dir%/}"
-vacbr_path="${vacbr_path%/}"
 
-# Caminho do lazbuild derivado de vlaz_dir
+# Se o parâmetro 1 está vazio OU o que foi passado não tem lazbuild, tenta detectar
+if [ -z "$vlaz_dir" ] || [ ! -x "${vlaz_dir}/lazbuild" ]; then
+  if [ -x "$HOME/fpcupdeluxe/lazarus/lazbuild" ]; then
+    vlaz_dir="$HOME/fpcupdeluxe/lazarus"
+  elif [ -x "$HOME/lazarus/lazbuild" ]; then
+    vlaz_dir="$HOME/lazarus"
+  fi
+fi
+
+# Loop de confirmação caso ainda não tenha encontrado
+while [ ! -x "${vlaz_dir}/lazbuild" ]; do
+  echo "  A pasta do Lazarus não foi detectada automaticamente ou é inválida."
+  echo -n "Por favor, informe onde o Lazarus está instalado (pasta que contém o 'lazbuild'): "
+  read vlaz_dir
+  vlaz_dir="${vlaz_dir%/}"
+done
+
+log " Lazarus detectado em: $vlaz_dir"
+LAZARUS_DIR="$vlaz_dir"
+LAZARUS_COMPONENTS="$LAZARUS_DIR/components"
+
+if [ ! -d "$LAZARUS_COMPONENTS" ]; then
+  log "Erro: diretório de componentes do Lazarus não encontrado:"
+  log "  $LAZARUS_COMPONENTS"
+  exit 1
+fi
+log " Componentes do Lazarus em: $LAZARUS_COMPONENTS"
+
 vlaz_build="${vlaz_dir}/lazbuild"
+check_lazarus_closed
 
-# Verifica se o arquivo "lazarus" existe no diretório indicado
-if [ ! -f "${vlaz_build}" ]; then
-  log "Erro: O arquivo ${vlaz_build} não foi encontrado."
-  exit 1
-fi
+# --- 2) Detecção/Atualização da Pasta do ACBr (vacbr_path) ---
 
-# Verifica se o segundo parâmetro foi fornecido e se o diretório não existe
-if [ ! -d "$vacbr_path/trunk2" ]; then
-  log "❌ O diretório '$vacbr_path/trunk2' não existe."
-  log "💡 Para clonar o repositório ACBr, execute o seguinte comando:"
-  log ""
-  log "❯  mkdir $vacbr_path/acbr"
-  log "❯  cd $vacbr_path/acbr"
-  log "❯  svn checkout https://svn.code.sf.net/p/acbr/code/trunk2"
-  log ""
-  exit 1
-fi
+# Função auxiliar para validar estrutura do ACBr
+# Critério: deve ter o conteúdo do trunk2 diretamente na pasta raiz do ACBr.
+check_acbr_structure() {
+  local path="$1"
+  if [ -f "$path/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk" ]; then
+    return 0
+  fi
+  return 1
+}
+
+ACBR_SVN_URL="https://svn.code.sf.net/p/acbr/code/trunk2"
+vacbr_path="$LAZARUS_COMPONENTS/acbr"
+
+migrate_old_acbr_layout() {
+  local old_trunk_path="$vacbr_path/trunk2"
+  local temp_path
+  local backup_path
+
+  if [ ! -d "$old_trunk_path/.svn" ] || [ -d "$vacbr_path/.svn" ]; then
+    return 0
+  fi
+
+  temp_path="${vacbr_path}.tmp-trunk2-$$"
+  backup_path="${vacbr_path}.layout-antigo-$(date +%Y%m%d%H%M%S)"
+
+  log " Detectei a estrutura antiga do ACBr em: $old_trunk_path"
+  log " Movendo o conteúdo de trunk2 para ficar diretamente em: $vacbr_path"
+
+  mv "$old_trunk_path" "$temp_path"
+  if rmdir "$vacbr_path" 2>/dev/null; then
+    mv "$temp_path" "$vacbr_path"
+  else
+    mv "$vacbr_path" "$backup_path"
+    mv "$temp_path" "$vacbr_path"
+    log " Conteúdo anterior preservado em: $backup_path"
+  fi
+}
+
+ensure_acbr_repo() {
+  local tentativa
+  local max_tentativas
+
+  migrate_old_acbr_layout
+
+  if [ -e "$vacbr_path" ] && ! svn info "$vacbr_path" >/dev/null 2>&1; then
+    log "Erro: já existe uma pasta do ACBr, mas ela não é uma working copy SVN válida:"
+    log "  $vacbr_path"
+    log "Remova ou renomeie esta pasta e execute o script novamente."
+    exit 1
+  fi
+
+  max_tentativas=3
+  tentativa=1
+  while [ "$tentativa" -le "$max_tentativas" ]; do
+    if [ ! -d "$vacbr_path/.svn" ]; then
+      log " ACBr não encontrado em: $vacbr_path"
+      log " Baixando ACBr via SVN em: $vacbr_path"
+      svn checkout "$ACBR_SVN_URL" "$vacbr_path" || true
+    else
+      log " Atualizando ACBr via SVN em: $vacbr_path"
+      svn cleanup "$vacbr_path" || true
+      svn update --accept theirs-full "$vacbr_path" || true
+    fi
+
+    if check_acbr_structure "$vacbr_path"; then
+      return 0
+    fi
+
+    log " Estrutura do ACBr ainda incompleta após tentativa $tentativa/$max_tentativas."
+    if [ -d "$vacbr_path/.svn" ]; then
+      log " Executando svn cleanup antes de tentar novamente..."
+      svn cleanup "$vacbr_path" || true
+    fi
+    tentativa=$((tentativa + 1))
+  done
+
+  if ! check_acbr_structure "$vacbr_path"; then
+    log "Erro: estrutura do ACBr inválida após checkout/update."
+    log "Esperado: $vacbr_path/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"
+    log "Tente executar novamente; o script fará svn cleanup/update antes de continuar."
+    exit 1
+  fi
+}
+
+acbr_package_path() {
+  local package="${1#trunk2/}"
+  printf '%s/%s\n' "$vacbr_path" "$package"
+}
+
+setup_lazarus_pcp() {
+  echo "───────  DIRETORIO DE CONFIGURAÇÃO  ──────"
+  # Se o fpcupdeluxe está instalado (~/fpcupdeluxe/lazarus/lazbuild existe), assume S e usa --pcp
+  if [ -f "$HOME/fpcupdeluxe/lazarus/lazbuild" ]; then
+    vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""
+    log " fpcupdeluxe detectado. Usando --pcp=$HOME/fpcupdeluxe/config_lazarus"
+    echo "fpcupdeluxe detectado. Usando diretório de configuração: $HOME/fpcupdeluxe/config_lazarus"
+  else
+    echo "Você faz uso do parametro --pcp para carregar o Lazarus(S/n)?"
+    echo "(digite 'n' para não ou ENTER para sim)"
+    echo -n " "
+    read resposta
+    resposta="${resposta:-S}"
+    if [[ "$resposta" =~ ^[Ss]$ ]]; then
+      vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""
+      echo "───────  DIRETORIO DE CONFIGURAÇÃO  ──────"
+      echo "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá:  $vlaz_build_pcp"
+      echo -n " "
+      read resposta
+      if [[ "$resposta" =~ ^[Ss]$ ]]; then
+        echo " Resposta ignorada"
+        resposta=""
+      fi
+      resposta="$(echo "$resposta" | xargs)"
+      if [ -n "$resposta" ]; then
+        vlaz_build_pcp=" --pcp=\"$resposta\""
+        log " --pcp indicado para:  $vlaz_build_pcp"
+      fi
+    fi
+  fi
+}
+
+configure_lazarus_package_files() {
+  if [ -n "$vlaz_build_pcp" ]; then
+    pcp_dir=$(echo "$vlaz_build_pcp" | sed -E 's/.*--pcp="([^"]+)".*/\1/')
+  else
+    pcp_dir="$HOME/.lazarus"
+  fi
+
+  arquivo_staticpackages="$pcp_dir/staticpackages.inc"
+  arquivo_packagefiles="$pcp_dir/packagefiles.xml"
+
+  if [ ! -f "$arquivo_staticpackages" ]; then
+    log " Arquivo $arquivo_staticpackages não encontrado."
+    log ".   O Lazarus parece não ter sido iniciado ou configurado ainda."
+    return 1
+  fi
+
+  return 0
+}
+
+precheck_acbr_dependencies() {
+  local pacote
+  local missing_count=0
+  local resposta
+
+  log " Verificando dependências antes de baixar/atualizar o ACBr..."
+  if ! configure_lazarus_package_files; then
+    echo -n "Deseja continuar mesmo assim e baixar/atualizar o ACBr (S/N)? "
+    read resposta
+    if [[ ! "$resposta" =~ ^[Ss]$ ]]; then
+      log " Instalação cancelada antes do download/update do ACBr."
+      exit 1
+    fi
+    return 0
+  fi
+
+  for pacote in "${PACKAGES_DEPS[@]}"; do
+    CheckInstalled "$pacote"
+    if [ $? -ne 0 ]; then
+      missing_count=$((missing_count + 1))
+      log " Aviso: pacote não encontrado previamente no Lazarus: $pacote"
+    fi
+  done
+
+  if [ "$missing_count" -gt 0 ]; then
+    log ".   Esta conferência olha estes arquivos:"
+    log ".   $arquivo_staticpackages"
+    log ".   $arquivo_packagefiles"
+    echo -n "Deseja continuar mesmo assim e baixar/atualizar o ACBr (S/N)? "
+    read resposta
+    if [[ ! "$resposta" =~ ^[Ss]$ ]]; then
+      log " Instalação cancelada antes do download/update do ACBr."
+      exit 1
+    fi
+  else
+    log " Dependências base encontradas antes do download/update do ACBr."
+  fi
+}
+
+vlaz_build_pcp=""
+setup_lazarus_pcp
+precheck_acbr_dependencies
+ensure_acbr_repo
+
+log " ACBr detectado em: $vacbr_path"
+
+# ==============================================================================
+# FIM DA LÓGICA DE DETECÇÃO
+# ==============================================================================
 
 # Armazena a data/hora do arquivo "lazarus" no início
 if [ -f "${vlaz_dir}/lazarus" ] ; then
@@ -331,146 +532,127 @@ fi
 vlaz_build_ide="--build-ide= "
 vlaz_build_widgetset=""
 vlaz_build_mode="--build-mode='Normal IDE'"
-vlaz_build_pcp=""
 echo ""
-echo "─────────────── 🛒 COMERCIO 🛒 ───────────────"
+echo "───────────────  COMERCIO  ───────────────"
 echo "Você deseja incluir os componentes categorizados como comercio?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo -n "❯ "
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
 read resposta
+resposta="${resposta:-S}"
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
   log "Foi adicionado o pacote de componentes para: Comercio"
   LPK_FILES+=("${LPK_COMERCIO[@]}")
 fi
 
-echo "────────────── 💰 FINANCEIRO 💰 ──────────────"
+echo "──────────────  FINANCEIRO  ──────────────"
 echo "Você deseja incluir os componentes categorizados como financeiro?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo -n "❯ "
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
 read resposta
+resposta="${resposta:-S}"
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
   log "Foi adicionado o pacote de componentes para: Financeiro"
   LPK_FILES+=("${LPK_FINANCEIRO[@]}")
 fi
 
-echo "──────────────── 🧾 FISCAL 🧾 ────────────────"
+echo "────────────────  FISCAL  ────────────────"
 echo "Você deseja incluir os componentes categorizados como fiscal?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo -n "❯ "
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
 read resposta
+resposta="${resposta:-S}"
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
   log "Foi adicionado o pacote de componentes para: Fiscal"
   LPK_FILES+=("${LPK_FISCAL[@]}")
 fi
 
-echo "──────────── 🖨️ FORTES REPORT 🖨️ ─────────────"
+echo "────────────  FORTES REPORT  ─────────────"
 echo "Você deseja incluir os formularios/impressos que usam o 'FortesReport Comunity Edition?'"
 echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo -n "❯ "
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
 read frce_sn
+frce_sn="${frce_sn:-S}"
 if [[ "$frce_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos do fortes-ce"
   PACKAGES_DEPS+=("frce")
 fi
 
-echo "─────────────── 🖨️ LAZREPORT 🖨️ ──────────────"
+echo "───────────────  LAZREPORT  ──────────────"
 echo "Você deseja incluir os formularios/impressos que usam o 'LazReport'?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo -n "❯ "
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
 read lazreport_sn
+lazreport_sn="${lazreport_sn:-S}"
 if [[ "$lazreport_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos do lazreport"
   PACKAGES_DEPS+=("lazfpreportdesign")
 fi
 
-echo "───────────────── 💾 FPDF 💾 ─────────────────"
+echo "─────────────────  FPDF  ─────────────────"
 echo "Você deseja incluir os formularios/impressos que usam 'FPDF'?"
 echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo -n "❯ "
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
 read fpdf_sn
+fpdf_sn="${fpdf_sn:-S}"
 if [[ "$fpdf_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos do fpdf"
 fi
 
-echo "─────────── 🖨️ MATRICIAL ESC-POS 🖨️ ──────────"
+echo "───────────  MATRICIAL ESC-POS  ──────────"
 echo "Você deseja incluir suporte aos formularios/impressos que usam impressoras matriciais compativeis com 'EscPos'?"
 echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo -n "❯ "
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
 read escpos_sn
+escpos_sn="${escpos_sn:-S}"
 if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
   log "Foi requerido o suporte a relatorios/impressos que usam escpos"
 fi
 
-echo "────────── 🧩 COMPONENTES VISUAIS 🧩 ─────────"
+echo "──────────  COMPONENTES VISUAIS  ─────────"
 echo "Você deseja reconstruir a IDE do Lazarus usando widgets diferentes do gtk?"
-echo "Neste caso digite uma das opções: qt, qt4, qt5, qt6"
-echo -n "❯ "
+echo "Neste caso digite uma das opções: gtk, qt5 ou qt6"
+echo -n " "
 read resp_widget
 if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
   # por engano digitou 'S' então apaga
-  echo "🙈 Resposta ignorada"  
+  echo " Resposta ignorada"
   resp_widget=""
 fi
 
 if [ ! -z "$resp_widget" ]; then
-  log "🧩 Widget da IDE trocado para $resp_widget"
+  log " Widget da IDE trocado para $resp_widget"
   vlaz_build_widgetset="--widgetset=$resp_widget "
-fi
-
-echo "─────── 🛠️ DIRETORIO DE CONFIGURAÇÃO 🛠️ ──────"
-echo "Você faz uso do parametro --pcp para carregar o Lazarus(s/n)?"
-echo "(digite 's' para sim ou ENTER para prosseguir como não)'"
-echo "⚠️ IMPORTANTE: Caso o Lazarus tenha sido instalado usando o fpcupdeluxe, a resposta deve ser 'S'."
-echo -n "❯ "
-read resposta
-if [[ "$resposta" =~ ^[Ss]$ ]]; then
-  # usuário confirmou com S ou s
-  vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""  
-  echo "─────── 🛠️ DIRETORIO DE CONFIGURAÇÃO 🛠️ ──────"
-  echo "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá: 📂 $vlaz_build_pcp"  
-  echo -n "❯ "
-  read resposta
-  if [[ "$resposta" =~ ^[Ss]$ ]]; then
-    # por engano digitou 'S' então apaga
-    echo "🙈 Resposta ignorada"   
-    resposta=""
-  fi
-  # Remove espaços à esquerda e à direita
-  resposta="$(echo "$resposta" | xargs)"  
-
-  if [ -n "$resposta" ]; then
-    vlaz_build_pcp=" --pcp=\"$resposta\""
-    log "🧩 --pcp indicado para: 📂 $vlaz_build_pcp"
-  fi
 fi
 
 # Verificar se o arquivo /usr/bin/windres existe
 # Aqui tá uma coisa que eu não gosto, instalar suporte
 # a 32bits por causa de apenas um componente.
-# Ignore a instalação deste tipo de suporte e alguns 
+# Ignore a instalação deste tipo de suporte e alguns
 # componentes não serão instalados.
 install_windres
 
 if [ ! -f /usr/bin/windres ]; then
-  echo "❓Você deseja incluir suporte a componentes ligados ao windres(s/n)?"
+  echo " Você deseja incluir suporte a componentes ligados ao windres(S/n)?"
   echo "windres é um utilitario que ajuda converter os arquivos de recursos(geralmente .rc) tipico de Windows/Delphi para Lazarus"
-  echo "⚠️ Ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir seu sistema, porém sem ele, alguns componentes do ACBr não compilam."
+  echo " Ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir seu sistema, porém sem ele, alguns componentes do ACBr não compilam."
+  echo "(digite 'n' para não ou ENTER para sim)"
   read windres_sn
+  windres_sn="${windres_sn:-S}"
   if [[ "$windres_sn" =~ ^[Ss]$ ]]; then
-    echo "📦 Instalando mingw-w64..."
+    echo " Instalando mingw-w64..."
     sudo apt update && sudo apt install -y mingw-w64
     if [ $? -ne 0 ]; then
-      log "❌ Falha ao instalar o pacote mingw-w64. Verifique sua conexão ou permissões."
+      log " Falha ao instalar o pacote mingw-w64. Verifique sua conexão ou permissões."
       exit 1
     else
       install_windres
       if [ $? -ne 0 ]; then
-        log "❌ Falha ao criar link simbolico para /usr/bin/windres. Verifique permissões."
+        log " Falha ao criar link simbolico para /usr/bin/windres. Verifique permissões."
         exit 2
-      fi  
+      fi
     fi
   fi
 fi
@@ -479,106 +661,83 @@ fi
 # INICIO DO PROCESSAMENTO
 #
 
-log "🚀 Iniciando instalação..."
-# Extrai o caminho do --pcp de vlaz_build_pcp
-pcp_dir=$(echo "$vlaz_build_pcp" | sed -E 's/.*--pcp="([^"]+)".*/\1/')
-arquivo_staticpackages="$pcp_dir/staticpackages.inc"
-arquivo_packagefiles="$pcp_dir/packagefiles.xml"
-# Confere se o arquivo staticpackages.inc existe
-if [ ! -f "$arquivo_staticpackages" ]; then
-  log "❌ Arquivo $arquivo_staticpackages não encontrado."
-  log ".   O Lazarus parece não ter sido iniciado ou configurado ainda."
-  exit 1
-fi
+log " Iniciando instalação..."
 
-# Verifica se os pacotes estão listados
-log "🔍 Verificando se as dependencias estão instaladas..."
-for pacote in "${PACKAGES_DEPS[@]}"; do
-  CheckInstalled "$pacote"
-  if [ $? -ne 0 ]; then
-    log "❌ Pacote obrigatório ausente no Lazarus: $pacote"
-    log ".   Verifique se está instalado e visível no Gerenciador de Pacotes do Lazarus."
-    log ".   Eu confiro se esta instalado olhando estes arquivos:"
-    log ".   $arquivo_staticpackages"
-    log ".   $arquivo_packagefiles"
-    exit 1
-  fi  
-done
-log "✅ Todas as dependencias estão instaladas."
-
-log "🔍 Verificando se todos os pacotes .lpk existem..."
+log " Verificando se todos os pacotes .lpk existem..."
 for LPK in "${LPK_FILES[@]}"; do
-  full_path="${vacbr_path}/${LPK}"
+  full_path="$(acbr_package_path "$LPK")"
   if [  -f "$full_path" ]; then
     if is_report_package "$full_path"; then
-      LPK_ULTIMOS+=($full_path)
-    fi    
+      LPK_ULTIMOS+=("$full_path")
+    fi
   else
-    log "❌ Pacote não encontrado: $full_path"
+    log " Pacote não encontrado: $full_path"
     log ".  Verifique se o repositório ACBr foi baixado corretamente."
     exit 1
   fi
 done
-log "✅ Todos os pacotes .lpk foram encontrados com sucesso."
+log " Todos os pacotes .lpk foram encontrados com sucesso."
 
 # Limpeza antes de recompilar o Lazarus IDE
 #cd "$vlaz_dir"
-#echo "🗑️ Limpando Lazarus IDE..."
+#echo " Limpando Lazarus IDE..."
 #make clean bigide
 
-log "🗂️ Compilando pacotes de runtime..."
+log " Compilando pacotes de runtime..."
 vcaptura_erro=""
 for runtime_pkg in "${RUNTIME_PACKAGES[@]}"; do
-  full_path="${vacbr_path}/${runtime_pkg}"
+  full_path="$(acbr_package_path "$runtime_pkg")"
   log ".  Compilando: $full_path"
   "$vlaz_build" "$full_path"
   if [ $? -ne 0 ]; then
     vcaptura_erro="$full_path"
-    log "❌ Falha ao compilar o pacote de runtime: $full_path"
+    log " Falha ao compilar o pacote de runtime: $full_path"
     log "\"$vlaz_build\" \"$full_path\""
+    exit 1
   fi
 done
 if [ -z "$vcaptura_erro" ]; then
-  log "✅ Pacotes de runtime compilados com sucesso."
+  log " Pacotes de runtime compilados com sucesso."
 fi
 
 # Compila todos os pacotes
-log "⚙️ Compilando todos pacotes..."
+log " Compilando todos pacotes..."
 for LPK in "${LPK_FILES[@]}"; do
-  full_path="${vacbr_path}/${LPK}"
+  full_path="$(acbr_package_path "$LPK")"
   vpode_compilar=true
   if is_report_package "$full_path"; then
     vpode_compilar=false
-  fi  
+  fi
   if [ "$vpode_compilar" == "true" ] ; then
-    log ".  Compilando pacote: $full_path"  
+    log ".  Compilando pacote: $full_path"
     "$vlaz_build" "$full_path"
     if [ $? -ne 0 ]; then
-      vcaptura_erro="$full_path"  
-      log "❌ Erro ao compilar o pacote: $full_path"
+      vcaptura_erro="$full_path"
+      log " Erro ao compilar o pacote: $full_path"
       log "\"$vlaz_build\" \"$full_path\""
+      exit 1
     fi
-  fi  
+  fi
 done
 if [ -z "$vcaptura_erro" ]; then
-  log "✅ Pacotes compilados com sucesso."
+  log " Pacotes compilados com sucesso."
 else
-  log "❌ Erro ao compilar o pacote: $vcaptura_erro"
+  log " Erro ao compilar o pacote: $vcaptura_erro"
   exit 1
 fi
 
 # Instala os pacotes um por um, mas apenas os que nao forem de runtime
-log "📦 Instala os pacotes um por um, mas apenas os que nao forem de runtime..."
+log " Instala os pacotes um por um, mas apenas os que nao forem de runtime..."
 vcaptura_erro=""
 for LPK in "${LPK_FILES[@]}"; do
-  full_path="${vacbr_path}/${LPK}"
+  full_path="$(acbr_package_path "$LPK")"
   vpode_instalar=true
   # Verifica se o pacote é de runtime
   if is_runtime_package "$LPK"; then
     vpode_instalar=false
   fi
   if is_report_package "$full_path"; then
-    pode_instalar=false
+    vpode_instalar=false
   fi
   if [ "$vpode_instalar" == "true" ] ; then
     log ".  Instalando pacote: $full_path"
@@ -590,18 +749,18 @@ for LPK in "${LPK_FILES[@]}"; do
     fi
   else
     log ".  Ignorando pacote de runtime/relatorio: $full_path"
-    continue  
+    continue
   fi
 done
 if [ -z "$vcaptura_erro" ]; then
-  log ✅ "📦 Pacotes instalados com sucesso."
+  log " Pacotes instalados com sucesso."
 else
-  log "❌ Alguns pacotes podem não ter sidos instalados, ex: $vcaptura_erro"
+  log " Alguns pacotes podem não ter sidos instalados, ex: $vcaptura_erro"
   exit 1
 fi
 
 # Instala os pacotes que foram deixados por ultimo, geralmente relatorios
-log "⚙️ Instalando os pacotes que precisam ser deixados por ultimo, geralmente relatorios..."
+log " Instalando os pacotes que precisam ser deixados por ultimo, geralmente relatorios..."
 vcaptura_erro=""
 for LPK in "${LPK_ULTIMOS[@]}"; do
   full_path="${LPK}"
@@ -613,33 +772,33 @@ for LPK in "${LPK_ULTIMOS[@]}"; do
   fi
   if [ "$vpode_instalar" == "true" ]; then
     # Conferindo se é relatório do Fortes
-    if echo "$full_path" | grep -iq "/fortes/"; then    
+    if echo "$full_path" | grep -iq "/fortes/"; then
       if [[ ! "$frce_sn" =~ ^[Ss]$ ]]; then
-        vpode_instalar=false  
+        vpode_instalar=false
       fi
     fi
   fi
   if [ "$vpode_instalar" == "true" ]; then
     # Conferindo se é relatório do Lazreport
-    if echo "$full_path" | grep -iq "/laz/"; then    
+    if echo "$full_path" | grep -iq "/laz/"; then
       if [[ ! "$lazreport_sn" =~ ^[Ss]$ ]]; then
-        vpode_instalar=false  
+        vpode_instalar=false
       fi
     fi
   fi
   if [ "$vpode_instalar" == "true" ]; then
     # Conferindo se é relatório do FPDF
-    if echo "$full_path" | grep -iq "/fpdf/"; then    
+    if echo "$full_path" | grep -iq "/fpdf/"; then
       if [[ ! "$fpdf_sn" =~ ^[Ss]$ ]]; then
-        vpode_instalar=false  
+        vpode_instalar=false
       fi
     fi
   fi
   if [ "$vpode_instalar" == "true" ]; then
     # Conferindo se é relatório do FPDF
-    if echo "$full_path" | grep -iq "/escpos/"; then    
+    if echo "$full_path" | grep -iq "/escpos/"; then
       if [[ ! "$escpos_sn" =~ ^[Ss]$ ]]; then
-        vpode_instalar=false  
+        vpode_instalar=false
       fi
     fi
   fi
@@ -653,12 +812,12 @@ for LPK in "${LPK_ULTIMOS[@]}"; do
     fi
   else
     log ".  Ignorando pacote: $full_path"
-    continue  
+    continue
   fi
 done
 
 # Após a limpeza, recompilar o Lazarus IDE
-log "⚙️ Recompilando o Lazarus IDE..."
+log " Recompilando o Lazarus IDE..."
 
 # Executa o comando de compilação com o uso de eval para garantir que as aspas sejam tratadas corretamente
 cmd_exec="$vlaz_build $vlaz_build_ide $vlaz_build_widgetset $vlaz_build_mode"
@@ -678,6 +837,6 @@ if [ -f "${vlaz_dir}/lazarus" ] ; then
     log "Erro: A data/hora do arquivo 'lazarus' não foi modificada. Recompilação falhou."
     exit 1
   else
-    log ✅ "Recompilação da IDE concluída com sucesso."
+    log " Recompilação da IDE concluída com sucesso."
   fi
 fi
