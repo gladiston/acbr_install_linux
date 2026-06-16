@@ -4,6 +4,10 @@
 set -e
 set -o pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lpkinstall-common.sh
+source "$SCRIPT_DIR/lpkinstall-common.sh"
+
 STAX_GIT_URL="https://github.com/dgaspary/fpStax.git"
 
 check_lazarus_closed() {
@@ -94,6 +98,8 @@ else
   cd "$STAX_DIR"
   git pull -f
 fi
+
+clean_component_build_artifacts "Stax" "$LAZARUS_COMPONENTS" "$STAX_DIR" "Stax-package/lib"
 
 if [ ! -f "$STAX_LPK" ]; then
   echo "Erro: pacote Stax não encontrado:"

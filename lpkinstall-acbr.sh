@@ -14,6 +14,10 @@
 # ./acbr_install.sh [pasta_lazarus]
 #
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lpkinstall-common.sh
+source "$SCRIPT_DIR/lpkinstall-common.sh"
+
 #
 # Funcoes
 #
@@ -139,6 +143,7 @@ echo "log criado em $vinicio" > "$vlog"
 RUNTIME_PACKAGES=(
   "trunk2/Pacotes/Lazarus/synapse/laz_synapse.lpk"
   "trunk2/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrLibXML2/ACBrLibXML2.lpk"
   "trunk2/Pacotes/Lazarus/ACBrOpenSSL/ACBrOpenSSL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDiversos/ACBrDiversos.lpk"
   "trunk2/Pacotes/Lazarus/PCNComum/PCNComum.lpk"
@@ -154,6 +159,7 @@ LPK_FILES=(
   # Essenciais
   "trunk2/Pacotes/Lazarus/synapse/laz_synapse.lpk"
   "trunk2/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"
+  "trunk2/Pacotes/Lazarus/ACBrLibXML2/ACBrLibXML2.lpk"
   "trunk2/Pacotes/Lazarus/ACBrOpenSSL/ACBrOpenSSL.lpk"
   "trunk2/Pacotes/Lazarus/ACBrDiversos/ACBrDiversos.lpk"
   "trunk2/Pacotes/Lazarus/PCNComum/PCNComum.lpk"
@@ -420,6 +426,38 @@ acbr_package_path() {
   printf '%s/%s\n' "$vacbr_path" "$package"
 }
 
+get_lazarus_pcp_dir() {
+  if [ -n "$vlaz_build_pcp" ]; then
+    echo "$vlaz_build_pcp" | sed -E 's/.*--pcp="([^"]+)".*/\1/'
+  else
+    echo "$HOME/.lazarus"
+  fi
+}
+
+detect_lazarus_widgetset() {
+  local idemake
+  local detected
+  local ws="gtk2"
+
+  idemake="$(get_lazarus_pcp_dir)/idemake.cfg"
+  if [ -f "$idemake" ]; then
+    detected="$(grep -oE '\-dLCL(qt6|qt5|gtk3|gtk2|nogui|win32|custom)' "$idemake" | head -1 | sed 's/-dLCL//')"
+    if [ -n "$detected" ]; then
+      ws="$detected"
+    fi
+  fi
+
+  echo "$ws"
+}
+
+run_lazbuild() {
+  if [ -n "$vlaz_build_pcp" ]; then
+    eval "\"$vlaz_build\"$vlaz_build_pcp $(printf '"%s" ' "$@")"
+  else
+    "$vlaz_build" "$@"
+  fi
+}
+
 setup_lazarus_pcp() {
   echo "───────  DIRETORIO DE CONFIGURAÇÃO  ──────"
   # Se o fpcupdeluxe está instalado (~/fpcupdeluxe/lazarus/lazbuild existe), assume S e usa --pcp
@@ -453,11 +491,7 @@ setup_lazarus_pcp() {
 }
 
 configure_lazarus_package_files() {
-  if [ -n "$vlaz_build_pcp" ]; then
-    pcp_dir=$(echo "$vlaz_build_pcp" | sed -E 's/.*--pcp="([^"]+)".*/\1/')
-  else
-    pcp_dir="$HOME/.lazarus"
-  fi
+  pcp_dir="$(get_lazarus_pcp_dir)"
 
   arquivo_staticpackages="$pcp_dir/staticpackages.inc"
   arquivo_packagefiles="$pcp_dir/packagefiles.xml"
@@ -514,6 +548,7 @@ vlaz_build_pcp=""
 setup_lazarus_pcp
 precheck_acbr_dependencies
 ensure_acbr_repo
+clean_component_build_artifacts "ACBr" "$LAZARUS_COMPONENTS" "$vacbr_path" "Lib"
 
 log " ACBr detectado em: $vacbr_path"
 
@@ -612,8 +647,9 @@ if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
 fi
 
 echo "──────────  COMPONENTES VISUAIS  ─────────"
-echo "Você deseja reconstruir a IDE do Lazarus usando widgets diferentes do gtk?"
-echo "Neste caso digite uma das opções: gtk, qt5 ou qt6"
+detected_widget="$(detect_lazarus_widgetset)"
+echo "Qual widgetset usar na recompilação da IDE do Lazarus?"
+echo "(ENTER para usar o detectado: $detected_widget, ou digite gtk2, qt5 ou qt6)"
 echo -n " "
 read resp_widget
 if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
@@ -622,8 +658,15 @@ if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
   resp_widget=""
 fi
 
-if [ ! -z "$resp_widget" ]; then
-  log " Widget da IDE trocado para $resp_widget"
+if [ -z "$resp_widget" ]; then
+  resp_widget="$detected_widget"
+fi
+if [ "$resp_widget" = "gtk" ]; then
+  resp_widget="gtk2"
+fi
+
+if [ -n "$resp_widget" ]; then
+  log " Widgetset da IDE: $resp_widget"
   vlaz_build_widgetset="--widgetset=$resp_widget "
 fi
 
@@ -688,11 +731,15 @@ vcaptura_erro=""
 for runtime_pkg in "${RUNTIME_PACKAGES[@]}"; do
   full_path="$(acbr_package_path "$runtime_pkg")"
   log ".  Compilando: $full_path"
-  "$vlaz_build" "$full_path"
+  run_lazbuild "$full_path"
   if [ $? -ne 0 ]; then
     vcaptura_erro="$full_path"
     log " Falha ao compilar o pacote de runtime: $full_path"
-    log "\"$vlaz_build\" \"$full_path\""
+    if [ -n "$vlaz_build_pcp" ]; then
+      log "\"$vlaz_build\"$vlaz_build_pcp \"$full_path\""
+    else
+      log "\"$vlaz_build\" \"$full_path\""
+    fi
     exit 1
   fi
 done
@@ -710,11 +757,15 @@ for LPK in "${LPK_FILES[@]}"; do
   fi
   if [ "$vpode_compilar" == "true" ] ; then
     log ".  Compilando pacote: $full_path"
-    "$vlaz_build" "$full_path"
+    run_lazbuild "$full_path"
     if [ $? -ne 0 ]; then
       vcaptura_erro="$full_path"
       log " Erro ao compilar o pacote: $full_path"
-      log "\"$vlaz_build\" \"$full_path\""
+      if [ -n "$vlaz_build_pcp" ]; then
+        log "\"$vlaz_build\"$vlaz_build_pcp \"$full_path\""
+      else
+        log "\"$vlaz_build\" \"$full_path\""
+      fi
       exit 1
     fi
   fi
@@ -741,10 +792,14 @@ for LPK in "${LPK_FILES[@]}"; do
   fi
   if [ "$vpode_instalar" == "true" ] ; then
     log ".  Instalando pacote: $full_path"
-    "$vlaz_build" --add-package "$full_path"
+    run_lazbuild --add-package "$full_path"
     if [ $? -ne 0 ]; then
       log "Erro ao instalar o pacote: $full_path"
-      log "$vlaz_build" --add-package "$full_path"
+      if [ -n "$vlaz_build_pcp" ]; then
+        log "$vlaz_build$vlaz_build_pcp --add-package \"$full_path\""
+      else
+        log "$vlaz_build --add-package \"$full_path\""
+      fi
       exit 1
     fi
   else
@@ -804,10 +859,14 @@ for LPK in "${LPK_ULTIMOS[@]}"; do
   fi
   if [ "$vpode_instalar" == "true" ] ; then
     echo ".  Instalando pacote: $full_path"
-    "$vlaz_build" --add-package "$full_path"
+    run_lazbuild --add-package "$full_path"
     if [ $? -ne 0 ]; then
       log "Erro ao instalar o pacote: $full_path"
-      log "$vlaz_build" --add-package "$full_path"
+      if [ -n "$vlaz_build_pcp" ]; then
+        log "$vlaz_build$vlaz_build_pcp --add-package \"$full_path\""
+      else
+        log "$vlaz_build --add-package \"$full_path\""
+      fi
       exit 1
     fi
   else
@@ -820,7 +879,11 @@ done
 log " Recompilando o Lazarus IDE..."
 
 # Executa o comando de compilação com o uso de eval para garantir que as aspas sejam tratadas corretamente
-cmd_exec="$vlaz_build $vlaz_build_ide $vlaz_build_widgetset $vlaz_build_mode"
+cmd_exec="$vlaz_build"
+if [ -n "$vlaz_build_pcp" ]; then
+  cmd_exec="$cmd_exec $vlaz_build_pcp"
+fi
+cmd_exec="$cmd_exec $vlaz_build_ide $vlaz_build_widgetset $vlaz_build_mode"
 log ".  $cmd_exec"
 eval "$cmd_exec"
 

@@ -8,6 +8,10 @@
 set -e
 set -o pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lpkinstall-common.sh
+source "$SCRIPT_DIR/lpkinstall-common.sh"
+
 check_lazarus_closed() {
   local running
 
@@ -193,6 +197,7 @@ fi
 ensure_git
 select_fortes_branch
 ensure_fortes_repo
+clean_component_build_artifacts "FortesReport-CE" "$LAZARUS_COMPONENTS" "$FORTES_DIR" "Binary/libLaz"
 
 # -------------------------------------------------
 # 3) Garantir FPC no PATH (necessário pro fppkg)

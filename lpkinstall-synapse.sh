@@ -4,6 +4,10 @@
 set -e
 set -o pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lpkinstall-common.sh
+source "$SCRIPT_DIR/lpkinstall-common.sh"
+
 SYNAPSE_GIT_URL="https://github.com/geby/synapse.git"
 
 check_lazarus_closed() {
@@ -110,6 +114,8 @@ else
   cd "$SYNAPSE_DIR"
   git pull -f
 fi
+
+clean_component_build_artifacts "Synapse" "$LAZARUS_COMPONENTS" "$SYNAPSE_DIR" "lib" "source/lib"
 
 SYNAPSE_LPK="$(find_synapse_lpk || true)"
 if [ -z "$SYNAPSE_LPK" ]; then

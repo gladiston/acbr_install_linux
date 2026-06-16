@@ -8,6 +8,10 @@
 set -e
 set -o pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lpkinstall-common.sh
+source "$SCRIPT_DIR/lpkinstall-common.sh"
+
 check_lazarus_closed() {
   local running
 
@@ -176,6 +180,7 @@ ensure_zeos_repo() {
 ensure_git
 select_zeos_branch
 ensure_zeos_repo
+clean_component_build_artifacts "Zeos" "$LAZARUS_COMPONENTS" "$ZEOS_DIR" "packages/lazarus/lib"
 
 echo
 echo "────────── COMPONENTES VISUAIS ─────────"

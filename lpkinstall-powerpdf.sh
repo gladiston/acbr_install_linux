@@ -4,6 +4,10 @@
 set -e
 set -o pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lpkinstall-common.sh
+source "$SCRIPT_DIR/lpkinstall-common.sh"
+
 POWERPDF_SVN_URL="svn://svn.code.sf.net/p/lazarus-ccr/svn/components/powerpdf"
 
 check_lazarus_closed() {
@@ -94,6 +98,8 @@ else
   svn cleanup "$POWERPDF_DIR" || true
   svn update --accept theirs-full "$POWERPDF_DIR"
 fi
+
+clean_component_build_artifacts "PowerPDF" "$LAZARUS_COMPONENTS" "$POWERPDF_DIR" "lib"
 
 if [ ! -f "$POWERPDF_LPK" ]; then
   echo "Erro: pacote PowerPDF não encontrado:"
