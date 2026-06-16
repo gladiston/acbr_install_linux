@@ -94,24 +94,26 @@ select_zeos_branch() {
   echo
   echo "─────────────── ZEOS ───────────────"
   echo "Qual branch do Zeos deseja instalar?"
-  echo "1) origin/HEAD"
+  echo "(ENTER vazio cancela e volta ao menu anterior)"
+  echo "1) origin/8.0-patches (recomendado para FPC 3.2.x)"
   echo "2) origin/8.0.0-stable"
-  echo "3) origin/8.0-patches (padrão)"
-  echo "4) outra"
+  echo "3) outra"
+  echo "4) origin/HEAD (master; desenvolvimento)"
   echo -n "> "
   read -r resp_branch
 
   case "$resp_branch" in
-    ""|3|"origin/8.0-patches")
-      ZEOS_BRANCH="origin/8.0-patches"
+    "")
+      echo "Instalação do Zeos cancelada."
+      exit 0
       ;;
-    1|"origin/HEAD")
-      ZEOS_BRANCH="origin/HEAD"
+    1|"origin/8.0-patches")
+      ZEOS_BRANCH="origin/8.0-patches"
       ;;
     2|"origin/8.0.0-stable")
       ZEOS_BRANCH="origin/8.0.0-stable"
       ;;
-    4|"outra"|"Outra"|"OUTRA")
+    3|"outra"|"Outra"|"OUTRA")
       echo
       echo "Branches remotas disponíveis:"
       list_remote_zeos_branches
@@ -123,10 +125,63 @@ select_zeos_branch() {
         exit 1
       fi
       ;;
+    4|"origin/HEAD")
+      ZEOS_BRANCH="origin/HEAD"
+      ;;
     *)
       ZEOS_BRANCH="$resp_branch"
       ;;
   esac
+}
+
+# Corrige ausência de size_t no FPC em branches que ainda não incorporaram o fix da 8.0-patches.
+patch_zeos_fpc_size_t() {
+  local compat_file="$ZEOS_DIR/src/core/ZCompatibility.pas"
+  local old_line='  {$IFNDEF FPC}{$IF NOT DECLARED(size_t)}size_t = Cardinal;{$IFEND}{$ENDIF} // For older Delphis'
+
+  if [ ! -f "$compat_file" ]; then
+    return 0
+  fi
+
+  if ! grep -qF "$old_line" "$compat_file"; then
+    return 0
+  fi
+
+  echo
+  echo "Aplicando correção de compatibilidade FPC (size_t) em ZCompatibility.pas..."
+  python3 - "$compat_file" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+old = (
+    '  {$IFNDEF FPC}{$IF NOT DECLARED(size_t)}size_t = Cardinal;{$IFEND}{$ENDIF} // For older Delphis\n'
+)
+new = (
+    '  {$IFDEF FPC}\n'
+    '    {$IF not declared(size_t)}\n'
+    '      {$IFDEF WINDOWS}\n'
+    '        size_t = Cardinal;\n'
+    '      {$ELSE}\n'
+    '        {$IFDEF CPU64}\n'
+    '          size_t = QWord;\n'
+    '        {$ELSE}\n'
+    '          size_t = Cardinal;\n'
+    '        {$ENDIF}\n'
+    '      {$ENDIF}\n'
+    '    {$IFEND}\n'
+    '  {$ELSE}\n'
+    '    {$IF NOT DECLARED(size_t) AND DECLARED(TSize_T)}size_t = TSize_T;{$ELSE}size_t = Cardinal;{$IFEND} // For older Delphis\n'
+    '  {$ENDIF}\n'
+)
+
+text = path.read_text(encoding='utf-8')
+if old not in text:
+    sys.exit(0)
+
+path.write_text(text.replace(old, new, 1), encoding='utf-8')
+print(f"  Corrigido: {path}")
+PY
 }
 
 switch_zeos_branch() {
@@ -180,6 +235,7 @@ ensure_zeos_repo() {
 ensure_git
 select_zeos_branch
 ensure_zeos_repo
+patch_zeos_fpc_size_t
 clean_component_build_artifacts "Zeos" "$LAZARUS_COMPONENTS" "$ZEOS_DIR" "packages/lazarus/lib"
 
 echo

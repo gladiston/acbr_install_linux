@@ -1,780 +1,144 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <UserPkgLinks Version="3" Count="83">
+  <UserPkgLinks Version="3" Count="1">
     <Item1>
-      <Name Value="ACBrBaaS"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrBaaS/ACBrBaaS.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item1>
-    <Item2>
-      <Name Value="ACBrComum"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item2>
-    <Item3>
-      <Name Value="ACBrDFeComum"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrDFeComum.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item3>
-    <Item4>
-      <Name Value="ACBrDFeReportRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrDFeReportRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item4>
-    <Item5>
-      <Name Value="ACBrDiversos"/>
-      <Version Minor="9"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDiversos/ACBrDiversos.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item5>
-    <Item6>
-      <Name Value="ACBre_Social"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBreSocial/ACBre_Social.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item6>
-    <Item7>
-      <Name Value="ACBrLibXML2"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrLibXML2/ACBrLibXML2.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item7>
-    <Item8>
-      <Name Value="ACBrOpenSSL"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrOpenSSL/ACBrOpenSSL.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item8>
-    <Item9>
-      <Name Value="ACBrSerial"/>
-      <Version Minor="9"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrSerial/ACBrSerial.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item9>
-    <Item10>
-      <Name Value="ACBrTCP"/>
-      <Version Minor="10"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTCP/ACBrTCP.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item10>
-    <Item11>
-      <Name Value="ACBrTXTComum"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrTXTComum.lpk"/>
-      <LastUsed Value="2026/06/16 10:40:25"/>
-    </Item11>
-    <Item12>
-      <Name Value="ACBr_ADRCST"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrADRCST/ACBr_ADRCST.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item12>
-    <Item13>
-      <Name Value="ACBr_ANe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrANe/ACBr_ANe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item13>
-    <Item14>
-      <Name Value="ACBr_BlocoX"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrBlocoX/ACBr_BlocoX.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item14>
-    <Item15>
-      <Name Value="ACBr_Boleto"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrBoleto/ACBr_Boleto.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item15>
-    <Item16>
-      <Name Value="ACBr_BoletoFC_Fortes"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrBoleto/FC/Fortes/ACBr_BoletoFC_Fortes.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item16>
-    <Item17>
-      <Name Value="ACBr_BoletoFC_FPDF"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrBoleto/FC/FPDF/ACBr_BoletoFC_FPDF.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item17>
-    <Item18>
-      <Name Value="ACBr_BoletoFC_LazReport"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrBoleto/FC/Laz/ACBr_BoletoFC_LazReport.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item18>
-    <Item19>
-      <Name Value="ACBr_BPe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrBPe/ACBr_BPe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item19>
-    <Item20>
-      <Name Value="ACBr_CIOT"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrCIOT/ACBr_CIOT.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item20>
-    <Item21>
-      <Name Value="ACBr_Convenio115"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrConvenio115/ACBr_Convenio115.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item21>
-    <Item22>
-      <Name Value="ACBr_CTe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrCTe/ACBr_CTe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item22>
-    <Item23>
-      <Name Value="ACBr_CTe_DACTeRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrCTe/DACTE/Fortes/ACBr_CTe_DACTeRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item23>
-    <Item24>
-      <Name Value="ACBr_DCe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrDCe/ACBr_DCe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item24>
-    <Item25>
-      <Name Value="ACBr_DCe_DACERL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrDCe/DACE/Fortes/ACBr_DCe_DACERL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item25>
-    <Item26>
-      <Name Value="ACBr_DebitoAutomatico"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDebitoAutomatico/ACBr_DebitoAutomatico.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item26>
-    <Item27>
-      <Name Value="ACBR_DeSTDA"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrDeSTDA/ACBR_DeSTDA.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item27>
-    <Item28>
-      <Name Value="ACBr_EDI"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrEDI/acbr_edi.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item28>
-    <Item29>
-      <Name Value="ACBr_GNRE"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/ACBr_GNRE.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item29>
-    <Item30>
-      <Name Value="ACBr_GNREGuiaLazReport"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/GNRE/Laz/ACBr_GNREGuiaLazReport.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item30>
-    <Item31>
-      <Name Value="ACBr_GNREGuiaRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrGNRE/GNRE/Fortes/ACBr_GNREGuiaRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item31>
-    <Item32>
-      <Name Value="ACBr_GTIN"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrGTIN/ACBr_GTIN.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item32>
-    <Item33>
-      <Name Value="ACBr_Integrador"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrIntegrador/ACBr_Integrador.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item33>
-    <Item34>
-      <Name Value="ACBr_LCDPR"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrLCDPR/ACBr_LCDPR.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item34>
-    <Item35>
-      <Name Value="ACBr_LFD"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrLFD/ACBr_LFD.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item35>
-    <Item36>
-      <Name Value="ACBr_MDFe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrMDFe/ACBr_MDFe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item36>
-    <Item37>
-      <Name Value="ACBr_MDFe_DAMDFeRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrMDFe/DAMDFE/Fortes/ACBr_MDFe_DAMDFeRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item37>
-    <Item38>
-      <Name Value="ACBr_MTER"/>
-      <Version Minor="2"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTCP/ACBr_MTER.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item38>
-    <Item39>
-      <Name Value="ACBr_NF3e"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/ACBr_NF3e.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item39>
-    <Item40>
-      <Name Value="ACBr_NF3e_DANF3ERL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNF3e/DANF3e/Fortes/ACBr_NF3e_DANF3ERL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item40>
-    <Item41>
-      <Name Value="acbr_nfce_ecfvirtual"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFe/ACBrECFVirtualNFCe/acbr_nfce_ecfvirtual.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item41>
-    <Item42>
-      <Name Value="ACBr_NFCom"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFCom/ACBr_NFCom.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item42>
-    <Item43>
-      <Name Value="ACBr_NFCom_DANFComRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFCom/DANFCom/Fortes/ACBr_NFCom_DANFComRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item43>
-    <Item44>
-      <Name Value="ACBr_NFe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFe/ACBr_NFe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item44>
-    <Item45>
-      <Name Value="ACBr_NFe_DanfeFPDF"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFe/FPDF/ACBr_NFe_DanfeFPDF.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item45>
-    <Item46>
-      <Name Value="ACBr_NFe_DanfeRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFe/Fortes/ACBr_NFe_DanfeRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item46>
-    <Item47>
-      <Name Value="ACBr_NFe_Danfe_LazReport"/>
-      <Version Minor="9"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFe/DANFE/NFe/Laz/ACBr_NFe_Danfe_LazReport.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item47>
-    <Item48>
-      <Name Value="ACBr_NFSe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFSe/ACBr_NFSe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item48>
-    <Item49>
-      <Name Value="ACBr_NFSeX"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/ACBr_NFSeX.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item49>
-    <Item50>
-      <Name Value="ACBr_NFSeXDanfseFPDF"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/DANFSE/FPDF/ACBr_NFSeXDanfseFPDF.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item50>
-    <Item51>
-      <Name Value="ACBr_NFSeXDanfseRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFSeX/DANFSE/Fortes/ACBr_NFSeXDanfseRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item51>
-    <Item52>
-      <Name Value="ACBr_NFSe_DanfseRL"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrNFSe/DANFSE/Fortes/ACBr_NFSe_DanfseRL.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item52>
-    <Item53>
-      <Name Value="ACBr_OFX"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrOFX/acbr_ofx.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item53>
-    <Item54>
-      <Name Value="ACBr_ONE"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrONE/ACBr_ONE.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item54>
-    <Item55>
-      <Name Value="ACBr_OpenDelivery"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrOpenDelivery/ACBr_OpenDelivery.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item55>
-    <Item56>
-      <Name Value="ACBr_PAF"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrPAF/ACBr_PAF.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item56>
-    <Item57>
-      <Name Value="ACBr_PAFNFCe"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrPAFNFCe/ACBr_PAFNFCe.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item57>
-    <Item58>
-      <Name Value="ACBr_PagFor"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrPagFor/ACBr_PagFor.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item58>
-    <Item59>
-      <Name Value="ACBr_PIXCD"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrPIXCD/ACBr_PIXCD.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item59>
-    <Item60>
-      <Name Value="ACBr_Ponto"/>
-      <Version Major="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrPonto/ACBr_Ponto.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item60>
-    <Item61>
-      <Name Value="ACBr_Reinf"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrReinf/ACBr_Reinf.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item61>
-    <Item62>
-      <Name Value="ACBr_SAT"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrSAT/ACBr_SAT.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item62>
-    <Item63>
-      <Name Value="ACBr_SATWS"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrDFe/ACBrSATWS/ACBr_SATWS.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item63>
-    <Item64>
-      <Name Value="ACBr_SAT_ECFVirtual"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrSAT/ACBrECFVirtualSAT/acbr_sat_ecfvirtual.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item64>
-    <Item65>
-      <Name Value="ACBr_SAT_Extrato_Fortes"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrSAT/Extrato/Fortes/ACBr_SAT_Extrato_Fortes.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item65>
-    <Item66>
-      <Name Value="ACBr_SAT_Extrato_FPDF"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrSAT/Extrato/FPDF/ACBr_SAT_Extrato_FPDF.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item66>
-    <Item67>
-      <Name Value="ACBr_SEF2"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrSEF2/ACBr_SEF2.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item67>
-    <Item68>
-      <Name Value="ACBr_Sintegra"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrSintegra/ACBr_Sintegra.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item68>
-    <Item69>
-      <Name Value="ACBr_SPED"/>
-      <Version Release="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTXT/ACBrSPED/ACBr_SPED.lpk"/>
-      <LastUsed Value="2026/04/30 16:21:59"/>
-    </Item69>
-    <Item70>
-      <Name Value="ACBr_TEFD"/>
-      <Version Major="4" Minor="3" Release="9"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/ACBrTEFD/ACBr_TEFD.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item70>
-    <Item71>
-      <Name Value="FrameViewer09"/>
-      <Version Major="11" Minor="8" Release="1"/>
-      <Filename Value="/home/gsantana/fpcupdeluxe/config_lazarus/onlinepackagemanager/packages/HtmlViewer/package/FrameViewer09.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item71>
-    <Item72>
-      <Name Value="frce"/>
-      <Version Major="4"/>
-      <Filename Value="components/fortesreport-ce/Packages/frce.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item72>
-    <Item73>
-      <Name Value="laz_synapse"/>
-      <Version Major="40" Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/synapse/laz_synapse.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item73>
-    <Item74>
-      <Name Value="laz_synapse"/>
-      <Version Major="41"/>
-      <Filename Value="components/synapse/laz_synapse.lpk"/>
-      <LastUsed Value="2026/04/30 16:09:27"/>
-    </Item74>
-    <Item75>
-      <Name Value="pack_powerpdf"/>
-      <Version Minor="9" Release="17" Build="1"/>
-      <Filename Value="components/powerpdf/pack_powerpdf.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item75>
-    <Item76>
-      <Name Value="PCNComum"/>
-      <Version Minor="1"/>
-      <Filename Value="components/acbr/Pacotes/Lazarus/PCNComum/PCNComum.lpk"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item76>
-    <Item77>
-      <Name Value="Stax"/>
-      <Version Release="1"/>
-      <Filename Value="components/stax/Stax-package/Stax.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item77>
-    <Item78>
-      <Name Value="zcomponent"/>
-      <Version Major="8"/>
-      <Filename Value="components/zeoslib/packages/lazarus/zcomponent.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item78>
-    <Item79>
-      <Name Value="zcomponentdesign"/>
-      <Version Major="8"/>
-      <Filename Value="components/zeoslib/packages/lazarus/zcomponentdesign.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item79>
-    <Item80>
       <Name Value="zcore"/>
       <Version Major="8"/>
       <Filename Value="components/zeoslib/packages/lazarus/zcore.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item80>
-    <Item81>
-      <Name Value="zdbc"/>
-      <Version Major="8"/>
-      <Filename Value="components/zeoslib/packages/lazarus/zdbc.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item81>
-    <Item82>
-      <Name Value="zparsesql"/>
-      <Version Major="8"/>
-      <Filename Value="components/zeoslib/packages/lazarus/zparsesql.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item82>
-    <Item83>
-      <Name Value="zplain"/>
-      <Version Major="8"/>
-      <Filename Value="components/zeoslib/packages/lazarus/zplain.lpk"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item83>
-  </UserPkgLinks>
-  <GlobalPkgLinks Version="3" Count="65">
-    <Item1>
-      <Name Value="anchordocking"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
+      <LastUsed Value="2026/06/16 17:45:31"/>
     </Item1>
-    <Item2>
-      <Name Value="anchordockingdsgn"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item2>
-    <Item3>
+  </UserPkgLinks>
+  <GlobalPkgLinks Version="3" Count="27">
+    <Item1>
       <Name Value="buildintf"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item3>
-    <Item4>
-      <Name Value="cairocanvas_pkg"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item4>
-    <Item5>
-      <Name Value="chmhelppkg"/>
-      <Version Minor="2" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item5>
-    <Item6>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item1>
+    <Item2>
       <Name Value="cmdlinedebuggerbase"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item6>
-    <Item7>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item2>
+    <Item3>
       <Name Value="codetools"/>
       <Version Major="1" Release="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item7>
-    <Item8>
-      <Name Value="cody"/>
-      <Version Major="1" Minor="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item8>
-    <Item9>
-      <Name Value="datetimectrls"/>
-      <Version Major="1" Minor="5" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item9>
-    <Item10>
-      <Name Value="datetimectrlsdsgn"/>
-      <Version Major="1" Minor="5" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item10>
-    <Item11>
-      <Name Value="dbflaz"/>
-      <Version Minor="1" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item11>
-    <Item12>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item3>
+    <Item4>
       <Name Value="debuggerintf"/>
       <Version Minor="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item12>
-    <Item13>
-      <Name Value="dockedformeditor"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item13>
-    <Item14>
-      <Name Value="exampleprojects"/>
-      <Version Minor="8"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item14>
-    <Item15>
-      <Name Value="externhelp"/>
-      <Version Major="1" Minor="3"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item15>
-    <Item16>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item4>
+    <Item5>
       <Name Value="fcl"/>
       <Version Major="1" Release="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item16>
-    <Item17>
-      <Name Value="fpcunitide"/>
-      <Version Minor="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item17>
-    <Item18>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item5>
+    <Item6>
       <Name Value="fpdebug"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item18>
-    <Item19>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item6>
+    <Item7>
       <Name Value="freetypelaz"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item19>
-    <Item20>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item7>
+    <Item8>
       <Name Value="ideconfig"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item20>
-    <Item21>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item8>
+    <Item9>
       <Name Value="idedebugger"/>
       <Version Release="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item21>
-    <Item22>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item9>
+    <Item10>
       <Name Value="ideintf"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item22>
-    <Item23>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item10>
+    <Item11>
       <Name Value="idepackager"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item23>
-    <Item24>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item11>
+    <Item12>
       <Name Value="ideproject"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item24>
-    <Item25>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item12>
+    <Item13>
       <Name Value="ideutilspkg"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item25>
-    <Item26>
-      <Name Value="imagesforlazarus"/>
-      <Version Major="1" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item26>
-    <Item27>
-      <Name Value="instantfpclaz"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item27>
-    <Item28>
-      <Name Value="jcfbase"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item28>
-    <Item29>
-      <Name Value="jcfidelazarus"/>
-      <Version Major="2"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item29>
-    <Item30>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item13>
+    <Item14>
       <Name Value="laz.virtualtreeview_package"/>
       <Version Major="5" Minor="5" Release="3" Build="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item30>
-    <Item31>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item14>
+    <Item15>
       <Name Value="lazcontroldsgn"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item31>
-    <Item32>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item15>
+    <Item16>
       <Name Value="lazcontrols"/>
       <Version Major="1" Release="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item32>
-    <Item33>
-      <Name Value="lazdaemon"/>
-      <Version Minor="9" Release="9"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item33>
-    <Item34>
-      <Name Value="lazdbexport"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item34>
-    <Item35>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item16>
+    <Item17>
       <Name Value="lazdebuggerfp"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item35>
-    <Item36>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item17>
+    <Item18>
       <Name Value="lazdebuggerfplldb"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item36>
-    <Item37>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item18>
+    <Item19>
       <Name Value="lazdebuggergdbmi"/>
       <Version Minor="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item37>
-    <Item38>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item19>
+    <Item20>
       <Name Value="lazdebuggerintf"/>
       <Version Release="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item38>
-    <Item39>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item20>
+    <Item21>
       <Name Value="lazdebuggerlldb"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item39>
-    <Item40>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item21>
+    <Item22>
       <Name Value="lazedit"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item40>
-    <Item41>
-      <Name Value="lazfpreportdesign"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item41>
-    <Item42>
-      <Name Value="lazmrumenu"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item42>
-    <Item43>
-      <Name Value="lazreport"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item43>
-    <Item44>
-      <Name Value="lazreportpdfexport"/>
-      <Version Minor="9"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item44>
-    <Item45>
-      <Name Value="laztestinsight"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item45>
-    <Item46>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item22>
+    <Item23>
       <Name Value="lazutils"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item46>
-    <Item47>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item23>
+    <Item24>
       <Name Value="lcl"/>
       <Version Major="4" Minor="9"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item47>
-    <Item48>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item24>
+    <Item25>
       <Name Value="lclbase"/>
       <Version Major="4" Minor="9"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item48>
-    <Item49>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item25>
+    <Item26>
       <Name Value="lclextensions_package"/>
       <Version Minor="6" Release="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item49>
-    <Item50>
-      <Name Value="lclfpreport"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item50>
-    <Item51>
-      <Name Value="leakview"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item51>
-    <Item52>
-      <Name Value="lhelpcontrolpkg"/>
-      <Version Minor="2"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item52>
-    <Item53>
-      <Name Value="lr_extexp"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item53>
-    <Item54>
-      <Name Value="lr_pdfexport"/>
-      <Version Minor="9"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item54>
-    <Item55>
-      <Name Value="memdslaz"/>
-      <Version Major="1" Minor="2" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item55>
-    <Item56>
-      <Name Value="multithreadprocslaz"/>
-      <Version Major="1" Minor="2" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item56>
-    <Item57>
-      <Name Value="onlinepackagemanager"/>
-      <Version Major="1" Release="1" Build="2"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item57>
-    <Item58>
-      <Name Value="printer4lazarus"/>
-      <Version Minor="5"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item58>
-    <Item59>
-      <Name Value="projtemplates"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item59>
-    <Item60>
-      <Name Value="runtimetypeinfocontrols"/>
-      <Version Minor="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item60>
-    <Item61>
-      <Name Value="sdflaz"/>
-      <Version Minor="1" Release="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item61>
-    <Item62>
-      <Name Value="sqldblaz"/>
-      <Version Major="1" Release="2"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item62>
-    <Item63>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item26>
+    <Item27>
       <Name Value="synedit"/>
       <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:44:12"/>
-    </Item63>
-    <Item64>
-      <Name Value="syneditdsgn"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item64>
-    <Item65>
-      <Name Value="tachartlazaruspkg"/>
-      <Version Major="1"/>
-      <LastUsed Value="2026/06/16 10:14:56"/>
-    </Item65>
+      <LastUsed Value="2026/06/16 17:45:31"/>
+    </Item27>
   </GlobalPkgLinks>
 </CONFIG>
