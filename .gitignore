@@ -1,0 +1,10 @@
+# Logs gerados pelos instaladores (ex.: lpkinstall-acbr.sh.log)
+*.log
+
+# Artefatos locais / temporários
+packagefiles.xml
+*.tmp
+*~
+*.bak
+*.swp
+.DS_Store

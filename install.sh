@@ -25,7 +25,11 @@ run_script() {
   echo
   echo "Executando: $script_name"
   echo "=============================================="
-  "$script_path"
+  # Não deixar falha do filho derrubar o menu (set -e).
+  if ! "$script_path"; then
+    echo
+    echo "Aviso: $script_name terminou com erro. Voltando ao menu."
+  fi
 }
 
 install_all() {

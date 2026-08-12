@@ -175,9 +175,13 @@ if [ -f "$LAZ_BIN" ]; then
         exit 1
     else
         log "SUCESSO: IDE Lazarus recompilada e pacotes instalados."
-        [ -n "$resp_widget" ] && log "Widgetset definido para: $resp_widget"
+        if [ -n "$resp_widget" ]; then
+            log "Widgetset definido para: $resp_widget"
+        fi
     fi
 else
     log "ERRO: Binário do Lazarus não encontrado após a compilação."
     exit 1
 fi
+
+exit 0
