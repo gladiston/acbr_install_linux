@@ -1,0 +1,3 @@
+# Forçar LF em scripts shell (evita shebang /bin/bash^M no Linux)
+*.sh text eol=lf
+*.bash text eol=lf
