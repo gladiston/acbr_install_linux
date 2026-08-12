@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <IconFinder>
+    <Folders Count="15">
+      <Item0 Value="__LAZARUS_DIR__\images\general_purpose\" Hidden="False"/>
+      <Item1 Value="__LAZARUS_DIR__\images\actions\" Hidden="True"/>
+      <Item2 Value="__LAZARUS_DIR__\images\codecompletion\" Hidden="True"/>
+      <Item3 Value="__LAZARUS_DIR__\images\codeexplorer\" Hidden="True"/>
+      <Item4 Value="__LAZARUS_DIR__\images\components\" Hidden="True"/>
+      <Item5 Value="__LAZARUS_DIR__\images\componenttreeview\" Hidden="True"/>
+      <Item6 Value="__LAZARUS_DIR__\images\debugger\" Hidden="True"/>
+      <Item7 Value="__LAZARUS_DIR__\images\items\" Hidden="True"/>
+      <Item8 Value="__LAZARUS_DIR__\images\lazdoc\" Hidden="True"/>
+      <Item9 Value="__LAZARUS_DIR__\images\menu\" Hidden="True"/>
+      <Item10 Value="__LAZARUS_DIR__\images\packages\" Hidden="True"/>
+      <Item11 Value="__LAZARUS_DIR__\images\states\" Hidden="True"/>
+      <Item12 Value="__LAZARUS_DIR__\components\chmhelp\lhelp\images\" Hidden="True"/>
+      <Item13 Value="__LAZARUS_DIR__\components\datetimectrls\pictures\" Hidden="True"/>
+      <Item14 Value="__LAZARUS_DIR__\components\lazcontrols\images\" Hidden="True"/>
+    </Folders>
+    <FilterHistory Count="0"/>
+  </IconFinder>
+</CONFIG>

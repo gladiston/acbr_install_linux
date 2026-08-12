@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <CodeToolsOptions>
+    <Version Value="2"/>
+    <JumpToMethodBody Value="True"/>
+    <DoNotSplitLineInFront>
+      <Identifier Value="True"/>
+      <Number Value="True"/>
+      <Symbol Value="True"/>
+      <Bracket Value="True"/>
+    </DoNotSplitLineInFront>
+    <IdentifierCompletion ShowHelp="True"/>
+  </CodeToolsOptions>
+</CONFIG>

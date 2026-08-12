@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <EditorOptions Version="13">
+    <Misc TabFontSize="10" MultiLineTab="True">
+      <ScrollOnEditLeftOptions KeepBorderDistance="2" KeepBorderDistancePercent="0" ScrollExtraColumns="5" ScrollExtraPercent="20" ScrollExtraMax="10"/>
+      <ScrollOnEditRightOptions KeepBorderDistance="0" KeepBorderDistancePercent="0" ScrollExtraColumns="10" ScrollExtraPercent="30" ScrollExtraMax="25"/>
+    </Misc>
+    <Display DoNotWarnForFont="Consolas" RightMargin="90" EditorFont="Consolas" EditorFontSize="11" ShowFileNameInCaption="True"/>
+    <KeyMapping>
+      <default Count="2">
+        <Version Value="6"/>
+        <Item1 Name="Run without debugging">
+          <KeyA Default="False" Key1="120" Shift1="3"/>
+        </Item1>
+        <Item2 Name="Toggle showing non visual components">
+          <KeyA Default="False" Key1="72" Shift1="1" Key2="72" Shift2="5"/>
+        </Item2>
+      </default>
+    </KeyMapping>
+    <CodeTools CodeTemplateFileName="__PCP_DIR__\lazarus.dci" AutoRemoveEmptyMethods="True"/>
+    <Mouse>
+      <Default Version="1"/>
+    </Mouse>
+    <Color Version="13">
+      <Globals Version="13">
+        <SchemeDefault>
+          <ahaLineHighlight Background="clGreen" Foreground="clWhite" BackAlpha="127"/>
+        </SchemeDefault>
+      </Globals>
+    </Color>
+    <General>
+      <Editor ShowTabCloseButtons="False" TabWidth="2" AutoHideCursor="True" HideSingleTabInWindow="True"/>
+    </General>
+    <CodeFolding UseMarkupOutline="True"/>
+  </EditorOptions>
+</CONFIG>

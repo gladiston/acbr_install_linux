@@ -49,12 +49,13 @@ while true; do
   echo "4. Instalar o Stax"
   echo "5. Instalar o PowerPDF"
   echo "6. Instalar o ACBr(inclui Synapse embutido; depende das demais opcoes acima)"
-  echo "7. Instalar curadoria do editor"
+  echo "7. Instalar pacotes selecionados pelo curador"
   echo "8. Instalar tudo"
   echo
   echo "9. Instalar Docking"
   echo "A. Reperguntar docking no próximo start do Lazarus"
   echo "B. Download do lazIdeExportSettings"
+  echo "C. Ajustes do curador na IDE"
   echo "X. Sair"
   echo "=============================================="
   echo -n "Escolha uma opção: "
@@ -72,6 +73,7 @@ while true; do
     9) run_script "lpkinstall-docking.sh" ;;
     [Aa]) run_script "lpkinstall-redockask.sh" ;;
     [Bb]) run_script "download-lazideexportsettings.sh" ;;
+    [Cc]) run_script "lpkinstall-ideajustes.sh" ;;
     [Xx])
       echo "Saindo."
       exit 0
