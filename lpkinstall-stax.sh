@@ -1,5 +1,5 @@
 #!/bin/bash
-# lpkinstall-stax.sh - Baixa, compila e instala o pacote fpStax no Lazarus
+# lpkinstall-stax.sh - Baixa e instala o pacote fpStax no Lazarus (OPM)
 
 set -e
 set -o pipefail
@@ -8,15 +8,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lpkinstall-common.sh
 source "$SCRIPT_DIR/lpkinstall-common.sh"
 
-STAX_GIT_URL="https://github.com/dgaspary/fpStax.git"
+STAX_OPM_ZIP="FpStax.zip"
+STAX_LPK_REL="Stax-package/Stax.lpk"
 
 check_lazarus_closed() {
   local running
-
   if ! command -v pgrep >/dev/null 2>&1; then
     return 0
   fi
-
   running="$(pgrep -u "$(id -u)" -af '(^|/)(lazarus|startlazarus)([[:space:]]|$)' || true)"
   if [ -n "$running" ]; then
     echo "Erro: a IDE Lazarus parece estar aberta."
@@ -27,18 +26,7 @@ check_lazarus_closed() {
   fi
 }
 
-ensure_git() {
-  if command -v git >/dev/null 2>&1; then
-    return 0
-  fi
-
-  echo "Erro: não encontrei o executável 'git' no PATH."
-  echo "Instale o Git e execute este script novamente."
-  exit 1
-}
-
 LAZARUS_DIR="${1:-$HOME/fpcupdeluxe/lazarus}"
-
 if [ ! -d "$LAZARUS_DIR" ]; then
   echo "Erro: pasta do Lazarus não encontrada:"
   echo "  $LAZARUS_DIR"
@@ -47,7 +35,6 @@ fi
 
 LAZBUILD="$LAZARUS_DIR/lazbuild"
 LAZ_BIN="$LAZARUS_DIR/lazarus"
-
 check_lazarus_closed
 
 if [ ! -x "$LAZBUILD" ]; then
@@ -59,7 +46,7 @@ fi
 
 LAZARUS_COMPONENTS="$LAZARUS_DIR/components"
 STAX_DIR="$LAZARUS_COMPONENTS/stax"
-STAX_LPK="$STAX_DIR/Stax-package/Stax.lpk"
+STAX_LPK="$STAX_DIR/$STAX_LPK_REL"
 
 if [ ! -d "$LAZARUS_COMPONENTS" ]; then
   echo "Erro: diretório de componentes do Lazarus não encontrado:"
@@ -83,20 +70,9 @@ if [ -n "$resp_widget" ]; then
   LAZBUILD_WIDGETSET_ARGS=(--widgetset="$resp_widget")
 fi
 
-ensure_git
-
-if [ -e "$STAX_DIR" ] && [ ! -d "$STAX_DIR/.git" ]; then
-  echo "Erro: já existe uma pasta stax, mas ela não é um repositório git válido:"
-  echo "  $STAX_DIR"
+if ! ensure_opm_zip "$STAX_OPM_ZIP" "$STAX_DIR" "$STAX_LPK_REL"; then
+  echo "Erro: não foi possível obter Stax de ${OPM_BASE_URL}${STAX_OPM_ZIP}"
   exit 1
-fi
-
-if [ ! -d "$STAX_DIR/.git" ]; then
-  cd "$LAZARUS_COMPONENTS"
-  git clone "$STAX_GIT_URL" "$STAX_DIR"
-else
-  cd "$STAX_DIR"
-  git pull -f
 fi
 
 clean_component_build_artifacts "Stax" "$LAZARUS_COMPONENTS" "$STAX_DIR" "Stax-package/lib"
@@ -104,7 +80,6 @@ clean_component_build_artifacts "Stax" "$LAZARUS_COMPONENTS" "$STAX_DIR" "Stax-p
 if [ ! -f "$STAX_LPK" ]; then
   echo "Erro: pacote Stax não encontrado:"
   echo "  $STAX_LPK"
-  echo "Verifique se STAX_GIT_URL aponta para o caminho correto."
   exit 1
 fi
 
@@ -112,7 +87,7 @@ echo
 echo "=============================================="
 echo "Stax no Lazarus"
 echo "Lazarus : $LAZARUS_DIR"
-echo "Comp.   : $LAZARUS_COMPONENTS"
+echo "Fonte   : ${OPM_BASE_URL}${STAX_OPM_ZIP}"
 echo "Widget  : ${resp_widget:-padrao}"
 echo "Pacote  : $STAX_LPK"
 echo "=============================================="

@@ -127,7 +127,6 @@ CheckInstalled() {
 # pack_powerpdf.lpk(opm) ou pack_powerpdf(staticpackages)
 PACKAGES_DEPS=(
   "Stax,Stax.lpk"
-  "laz_synapse.lpk,synapse"
   "pack_powerpdf.lpk, pack_powerpdf"
 )
 
@@ -275,9 +274,9 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
-# Verifica se o comando svn está disponível
-if ! command -v svn >/dev/null 2>&1; then
-  echo "  O comando 'svn' não foi encontrado."
+# Verifica se o comando svn ou git está disponível
+if ! command -v svn >/dev/null 2>&1 && ! command -v git >/dev/null 2>&1; then
+  echo "  Nem 'svn' nem 'git' foram encontrados."
   echo -n "Deseja instalar o Subversion agora? (S/n): "
   read resposta
   resposta="${resposta:-S}"
@@ -289,7 +288,7 @@ if ! command -v svn >/dev/null 2>&1; then
       exit 1
     fi
   else
-    log " Instalação do Subversion cancelada. Encerrando o script."
+    log " Sem SVN/Git. Encerrando o script."
     exit 1
   fi
 fi
@@ -348,7 +347,10 @@ check_acbr_structure() {
 }
 
 ACBR_SVN_URL="https://svn.code.sf.net/p/acbr/code/trunk2"
+ACBR_SVN_URL_ALT="svn://svn.code.sf.net/p/acbr/code/trunk2"
+ACBR_GIT_URL="https://github.com/MirrorProjetoACBr/ACBr.git"
 vacbr_path="$LAZARUS_COMPONENTS/acbr"
+ACBR_UPDATE_WANTED=0
 
 migrate_old_acbr_layout() {
   local old_trunk_path="$vacbr_path/trunk2"
@@ -375,48 +377,121 @@ migrate_old_acbr_layout() {
   fi
 }
 
+detect_acbr_repo_kind() {
+  if [ ! -e "$vacbr_path" ]; then
+    echo ""
+    return 0
+  fi
+  if [ -d "$vacbr_path/.svn" ]; then
+    echo "svn"
+    return 0
+  fi
+  if command -v svn >/dev/null 2>&1 && svn info "$vacbr_path" >/dev/null 2>&1; then
+    echo "svn"
+    return 0
+  fi
+  if [ -d "$vacbr_path/.git" ]; then
+    echo "git"
+    return 0
+  fi
+  echo ""
+}
+
 ensure_acbr_repo() {
   local tentativa
   local max_tentativas
+  local ok_svn=0
+  local ok_git=0
 
   migrate_old_acbr_layout
 
-  if [ -e "$vacbr_path" ] && ! svn info "$vacbr_path" >/dev/null 2>&1; then
-    log "Erro: já existe uma pasta do ACBr, mas ela não é uma working copy SVN válida:"
-    log "  $vacbr_path"
-    log "Remova ou renomeie esta pasta e execute o script novamente."
-    exit 1
+  if [ -e "$vacbr_path" ]; then
+    if [ -d "$vacbr_path/.svn" ] || { command -v svn >/dev/null 2>&1 && svn info "$vacbr_path" >/dev/null 2>&1; }; then
+      ok_svn=1
+    fi
+    if [ -d "$vacbr_path/.git" ]; then
+      ok_git=1
+    fi
+
+    if check_acbr_structure "$vacbr_path" && { [ "$ok_svn" -eq 1 ] || [ "$ok_git" -eq 1 ]; }; then
+      log " ACBr já encontrado em: $vacbr_path"
+      if [ "${ACBR_UPDATE_WANTED:-0}" -eq 1 ]; then
+        if [ "$ok_svn" -eq 1 ]; then
+          log " Atualizando ACBr via SVN em: $vacbr_path"
+          svn cleanup "$vacbr_path" || true
+          svn update --accept theirs-full "$vacbr_path" || true
+        else
+          log " Atualizando ACBr via Git em: $vacbr_path"
+          git -C "$vacbr_path" pull --ff-only || true
+        fi
+      else
+        log " Mantendo ACBr local sem atualizar."
+      fi
+      if check_acbr_structure "$vacbr_path"; then
+        return 0
+      fi
+    fi
+
+    if [ "$ok_svn" -eq 0 ] && [ "$ok_git" -eq 0 ] && ! check_acbr_structure "$vacbr_path"; then
+      log "Erro: já existe pasta ACBr, mas não é SVN/Git válido:"
+      log "  $vacbr_path"
+      exit 1
+    fi
+
+    if check_acbr_structure "$vacbr_path"; then
+      log " ACBr local válido em: $vacbr_path (sem metadados SVN/Git para atualizar)"
+      return 0
+    fi
   fi
 
-  max_tentativas=3
+  max_tentativas=2
   tentativa=1
   while [ "$tentativa" -le "$max_tentativas" ]; do
-    if [ ! -d "$vacbr_path/.svn" ]; then
-      log " ACBr não encontrado em: $vacbr_path"
-      log " Baixando ACBr via SVN em: $vacbr_path"
-      svn checkout "$ACBR_SVN_URL" "$vacbr_path" || true
-    else
-      log " Atualizando ACBr via SVN em: $vacbr_path"
+    if [ ! -d "$vacbr_path/.svn" ] && [ ! -d "$vacbr_path/.git" ]; then
+      log " ACBr não encontrado. Checkout SVN ($tentativa/$max_tentativas)..."
+      rm -rf "$vacbr_path"
+      if ! svn checkout "$ACBR_SVN_URL" "$vacbr_path"; then
+        log " Checkout HTTPS falhou; tentando svn://"
+        svn checkout "$ACBR_SVN_URL_ALT" "$vacbr_path" || true
+      fi
+      if check_acbr_structure "$vacbr_path"; then
+        log " ACBr obtido via SVN: $ACBR_SVN_URL"
+        return 0
+      fi
+
+      log " SVN incompleto/falhou. Tentando mirror Git MirrorProjetoACBr..."
+      rm -rf "$vacbr_path"
+      if ! command -v git >/dev/null 2>&1; then
+        log "Erro: git não encontrado para o fallback do mirror."
+        exit 1
+      fi
+      git clone --depth 1 --single-branch "$ACBR_GIT_URL" "$vacbr_path" || true
+      if [ -d "$vacbr_path/.git" ]; then
+        git -C "$vacbr_path" config core.longpaths true || true
+      fi
+      if check_acbr_structure "$vacbr_path"; then
+        log " ACBr obtido via Git: $ACBR_GIT_URL"
+        return 0
+      fi
+    elif [ -d "$vacbr_path/.svn" ]; then
+      log " ACBr incompleto com .svn; atualizando via SVN..."
       svn cleanup "$vacbr_path" || true
       svn update --accept theirs-full "$vacbr_path" || true
+    else
+      log " ACBr incompleto com .git; atualizando via Git..."
+      git -C "$vacbr_path" pull --ff-only || true
     fi
 
     if check_acbr_structure "$vacbr_path"; then
       return 0
     fi
-
-    log " Estrutura do ACBr ainda incompleta após tentativa $tentativa/$max_tentativas."
-    if [ -d "$vacbr_path/.svn" ]; then
-      log " Executando svn cleanup antes de tentar novamente..."
-      svn cleanup "$vacbr_path" || true
-    fi
+    log " Estrutura do ACBr incompleta após tentativa $tentativa/$max_tentativas."
     tentativa=$((tentativa + 1))
   done
 
   if ! check_acbr_structure "$vacbr_path"; then
     log "Erro: estrutura do ACBr inválida após checkout/update."
     log "Esperado: $vacbr_path/Pacotes/Lazarus/ACBrComum/ACBrComum.lpk"
-    log "Tente executar novamente; o script fará svn cleanup/update antes de continuar."
     exit 1
   fi
 }
@@ -459,34 +534,51 @@ run_lazbuild() {
 }
 
 setup_lazarus_pcp() {
+  local default_pcp="N"
+  local suggested_pcp="$HOME/.lazarus"
+  local parent_cfg
+
   echo "───────  DIRETORIO DE CONFIGURAÇÃO  ──────"
-  # Se o fpcupdeluxe está instalado (~/fpcupdeluxe/lazarus/lazbuild existe), assume S e usa --pcp
-  if [ -f "$HOME/fpcupdeluxe/lazarus/lazbuild" ]; then
-    vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""
-    log " fpcupdeluxe detectado. Usando --pcp=$HOME/fpcupdeluxe/config_lazarus"
-    echo "fpcupdeluxe detectado. Usando diretório de configuração: $HOME/fpcupdeluxe/config_lazarus"
+
+  # Se o Lazarus está dentro do fpcupdeluxe, o padrão de --pcp é Sim.
+  case "$vlaz_dir" in
+    *fpcupdeluxe*)
+      default_pcp="S"
+      parent_cfg="$(dirname "$vlaz_dir")/config_lazarus"
+      if [ -d "$parent_cfg" ]; then
+        suggested_pcp="$parent_cfg"
+      elif [ -d "$HOME/fpcupdeluxe/config_lazarus" ]; then
+        suggested_pcp="$HOME/fpcupdeluxe/config_lazarus"
+      fi
+      ;;
+  esac
+
+  if [ "$default_pcp" = "S" ]; then
+    echo "Você usa --pcp para carregar o Lazarus? (S/n)"
   else
-    echo "Você faz uso do parametro --pcp para carregar o Lazarus(S/n)?"
-    echo "(digite 'n' para não ou ENTER para sim)"
+    echo "Você usa --pcp para carregar o Lazarus? (s/N)"
+  fi
+  echo "Sugestão de PCP: $suggested_pcp"
+  echo -n " "
+  read resposta
+  resposta="${resposta:-$default_pcp}"
+  if [[ "$resposta" =~ ^[Ss]$ ]]; then
+    echo "Informe o caminho do PCP (ENTER = sugestão):"
     echo -n " "
     read resposta
-    resposta="${resposta:-S}"
-    if [[ "$resposta" =~ ^[Ss]$ ]]; then
-      vlaz_build_pcp=" --pcp=\"$HOME/fpcupdeluxe/config_lazarus\""
-      echo "───────  DIRETORIO DE CONFIGURAÇÃO  ──────"
-      echo "Informe o caminho para sua configuração do Lazarus(--pcp), se deixar em branco, assumirá:  $vlaz_build_pcp"
-      echo -n " "
-      read resposta
-      if [[ "$resposta" =~ ^[Ss]$ ]]; then
-        echo " Resposta ignorada"
-        resposta=""
-      fi
-      resposta="$(echo "$resposta" | xargs)"
-      if [ -n "$resposta" ]; then
-        vlaz_build_pcp=" --pcp=\"$resposta\""
-        log " --pcp indicado para:  $vlaz_build_pcp"
-      fi
+    if [[ "$resposta" =~ ^[SsNn]$ ]]; then
+      echo " Resposta ignorada"
+      resposta=""
     fi
+    resposta="$(echo "$resposta" | xargs)"
+    if [ -z "$resposta" ]; then
+      resposta="$suggested_pcp"
+    fi
+    vlaz_build_pcp=" --pcp=\"$resposta\""
+    log " Usando --pcp=$resposta"
+  else
+    vlaz_build_pcp=""
+    log " Usando PCP padrão do Lazarus (~/.lazarus), sem --pcp"
   fi
 }
 
@@ -545,11 +637,208 @@ precheck_acbr_dependencies() {
 }
 
 vlaz_build_pcp=""
+vlaz_build_widgetset=""
 setup_lazarus_pcp
+
+# Perguntas primeiro; depois confirmação; então download/instalação sem novas perguntas.
+want_comercio=0
+want_financeiro=0
+want_fiscal=0
+ACBR_UPDATE_WANTED=0
+windres_sn="N"
+repo_kind=""
+
+echo ""
+echo "=============================================="
+echo "Perguntas iniciais (depois disso não haverá novas perguntas)"
+echo "=============================================="
+
+echo "───────────────  COMERCIO  ───────────────"
+echo "Você deseja incluir os componentes categorizados como comercio?"
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
+read resposta
+resposta="${resposta:-S}"
+[[ "$resposta" =~ ^[Ss]$ ]] && want_comercio=1
+
+echo "──────────────  FINANCEIRO  ──────────────"
+echo "Você deseja incluir os componentes categorizados como financeiro?"
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
+read resposta
+resposta="${resposta:-S}"
+[[ "$resposta" =~ ^[Ss]$ ]] && want_financeiro=1
+
+echo "────────────────  FISCAL  ────────────────"
+echo "Você deseja incluir os componentes categorizados como fiscal?"
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
+read resposta
+resposta="${resposta:-S}"
+[[ "$resposta" =~ ^[Ss]$ ]] && want_fiscal=1
+
+echo "────────────  FORTES REPORT  ─────────────"
+echo "Você deseja incluir os formularios/impressos que usam o 'FortesReport Comunity Edition?'"
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
+read frce_sn
+frce_sn="${frce_sn:-S}"
+
+echo "───────────────  LAZREPORT  ──────────────"
+echo "Você deseja incluir os formularios/impressos que usam o 'LazReport'?"
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
+read lazreport_sn
+lazreport_sn="${lazreport_sn:-S}"
+
+echo "─────────────────  FPDF  ─────────────────"
+echo "Você deseja incluir os formularios/impressos que usam 'FPDF'?"
+echo "(digite 'n' para não ou ENTER para sim)"
+echo -n " "
+read fpdf_sn
+fpdf_sn="${fpdf_sn:-S}"
+
+echo "───────────  MATRICIAL ESC-POS  ──────────"
+echo "Você deseja incluir suporte EscPos (matricial)?"
+echo "(digite 's' para sim ou ENTER para não)"
+echo -n " "
+read escpos_sn
+escpos_sn="${escpos_sn:-N}"
+
+echo "──────────  COMPONENTES VISUAIS  ─────────"
+detected_widget="$(detect_lazarus_widgetset)"
+echo "Qual widgetset usar na recompilação da IDE do Lazarus?"
+echo "(ENTER para usar o detectado: $detected_widget, ou digite gtk2, qt5 ou qt6)"
+echo -n " "
+read resp_widget
+if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
+  echo " Resposta ignorada"
+  resp_widget=""
+fi
+if [ -z "$resp_widget" ]; then
+  resp_widget="$detected_widget"
+fi
+if [ "$resp_widget" = "gtk" ]; then
+  resp_widget="gtk2"
+fi
+if [ -n "$resp_widget" ]; then
+  log " Widgetset da IDE: $resp_widget"
+  vlaz_build_widgetset="--widgetset=$resp_widget "
+fi
+
+if [ ! -f /usr/bin/windres ]; then
+  echo " Você deseja incluir suporte a componentes ligados ao windres(S/n)?"
+  echo " Requer mingw-w64. Sem ele, alguns componentes do ACBr não compilam."
+  echo "(digite 'n' para não ou ENTER para sim)"
+  read windres_sn
+  windres_sn="${windres_sn:-S}"
+fi
+
+if [ -e "$vacbr_path" ] && check_acbr_structure "$vacbr_path"; then
+  repo_kind="$(detect_acbr_repo_kind)"
+  echo "────────────  ACBR LOCAL  ────────────"
+  log " ACBr já encontrado em: $vacbr_path"
+  if [ "$repo_kind" = "svn" ]; then
+    echo "Repositório: SVN"
+    echo -n "Deseja atualizar o ACBr via SVN antes de instalar (S/n)? "
+    read resposta
+    resposta="${resposta:-S}"
+    [[ "$resposta" =~ ^[Ss]$ ]] && ACBR_UPDATE_WANTED=1
+  elif [ "$repo_kind" = "git" ]; then
+    echo "Repositório: Git"
+    echo -n "Deseja atualizar o ACBr via Git antes de instalar (S/n)? "
+    read resposta
+    resposta="${resposta:-S}"
+    [[ "$resposta" =~ ^[Ss]$ ]] && ACBR_UPDATE_WANTED=1
+  else
+    echo "Pasta local sem .svn/.git; não haverá atualização remota."
+    ACBR_UPDATE_WANTED=0
+  fi
+else
+  echo "────────────  ACBR  ────────────"
+  echo "ACBr ainda não está em: $vacbr_path"
+  echo "Após confirmar, será feito checkout (SVN; fallback Git)."
+  ACBR_UPDATE_WANTED=1
+fi
+
 precheck_acbr_dependencies
+
+echo ""
+echo "=============================================="
+echo "Resumo das opções"
+echo "=============================================="
+echo "Comercio     : $want_comercio"
+echo "Financeiro   : $want_financeiro"
+echo "Fiscal       : $want_fiscal"
+echo "Fortes CE    : $frce_sn"
+echo "LazReport    : $lazreport_sn"
+echo "FPDF         : $fpdf_sn"
+echo "EscPos       : $escpos_sn"
+echo "Widgetset    : $resp_widget"
+echo "windres      : $windres_sn"
+if [ -e "$vacbr_path" ] && check_acbr_structure "$vacbr_path"; then
+  if [ "$ACBR_UPDATE_WANTED" -eq 1 ]; then
+    echo "ACBr local   : atualizar (${repo_kind:-?})"
+  else
+    echo "ACBr local   : manter sem atualizar"
+  fi
+else
+  echo "ACBr local   : baixar (SVN/Git)"
+fi
+echo "=============================================="
+echo -n "Confirmar e iniciar download/instalação (sem mais perguntas) (S/n)? "
+read resposta
+resposta="${resposta:-S}"
+if [[ ! "$resposta" =~ ^[Ss]$ ]]; then
+  log " Instalação cancelada pelo usuário."
+  exit 1
+fi
+
+# Aplica escolhas
+if [ "$want_comercio" -eq 1 ]; then
+  log "Foi adicionado o pacote de componentes para: Comercio"
+  LPK_FILES+=("${LPK_COMERCIO[@]}")
+fi
+if [ "$want_financeiro" -eq 1 ]; then
+  log "Foi adicionado o pacote de componentes para: Financeiro"
+  LPK_FILES+=("${LPK_FINANCEIRO[@]}")
+fi
+if [ "$want_fiscal" -eq 1 ]; then
+  log "Foi adicionado o pacote de componentes para: Fiscal"
+  LPK_FILES+=("${LPK_FISCAL[@]}")
+fi
+if [[ "$frce_sn" =~ ^[Ss]$ ]]; then
+  log "Foi requerido o suporte a relatorios/impressos do fortes-ce"
+  PACKAGES_DEPS+=("frce")
+fi
+if [[ "$lazreport_sn" =~ ^[Ss]$ ]]; then
+  log "Foi requerido o suporte a relatorios/impressos do lazreport"
+  PACKAGES_DEPS+=("lazfpreportdesign")
+fi
+if [[ "$fpdf_sn" =~ ^[Ss]$ ]]; then
+  log "Foi requerido o suporte a relatorios/impressos do fpdf"
+fi
+if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
+  log "Foi requerido o suporte a relatorios/impressos que usam escpos"
+fi
+
+install_windres
+if [ ! -f /usr/bin/windres ] && [[ "$windres_sn" =~ ^[Ss]$ ]]; then
+  echo " Instalando mingw-w64..."
+  sudo apt update && sudo apt install -y mingw-w64
+  if [ $? -ne 0 ]; then
+    log " Falha ao instalar o pacote mingw-w64. Verifique sua conexão ou permissões."
+    exit 1
+  fi
+  install_windres || {
+    log " Falha ao criar link simbolico para /usr/bin/windres. Verifique permissões."
+    exit 2
+  }
+fi
+
+log " Iniciando download/atualização e instalação..."
 ensure_acbr_repo
 clean_component_build_artifacts "ACBr" "$LAZARUS_COMPONENTS" "$vacbr_path" "Lib"
-
 log " ACBr detectado em: $vacbr_path"
 
 # ==============================================================================
@@ -565,146 +854,11 @@ fi
 
 # Opções para recompilar o Lazarus IDE
 vlaz_build_ide="--build-ide= "
-vlaz_build_widgetset=""
 vlaz_build_mode="--build-mode='Normal IDE'"
-echo ""
-echo "───────────────  COMERCIO  ───────────────"
-echo "Você deseja incluir os componentes categorizados como comercio?"
-echo "(digite 'n' para não ou ENTER para sim)"
-echo -n " "
-read resposta
-resposta="${resposta:-S}"
-if [[ "$resposta" =~ ^[Ss]$ ]]; then
-  log "Foi adicionado o pacote de componentes para: Comercio"
-  LPK_FILES+=("${LPK_COMERCIO[@]}")
-fi
-
-echo "──────────────  FINANCEIRO  ──────────────"
-echo "Você deseja incluir os componentes categorizados como financeiro?"
-echo "(digite 'n' para não ou ENTER para sim)"
-echo -n " "
-read resposta
-resposta="${resposta:-S}"
-if [[ "$resposta" =~ ^[Ss]$ ]]; then
-  log "Foi adicionado o pacote de componentes para: Financeiro"
-  LPK_FILES+=("${LPK_FINANCEIRO[@]}")
-fi
-
-echo "────────────────  FISCAL  ────────────────"
-echo "Você deseja incluir os componentes categorizados como fiscal?"
-echo "(digite 'n' para não ou ENTER para sim)"
-echo -n " "
-read resposta
-resposta="${resposta:-S}"
-if [[ "$resposta" =~ ^[Ss]$ ]]; then
-  log "Foi adicionado o pacote de componentes para: Fiscal"
-  LPK_FILES+=("${LPK_FISCAL[@]}")
-fi
-
-echo "────────────  FORTES REPORT  ─────────────"
-echo "Você deseja incluir os formularios/impressos que usam o 'FortesReport Comunity Edition?'"
-echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 'n' para não ou ENTER para sim)"
-echo -n " "
-read frce_sn
-frce_sn="${frce_sn:-S}"
-if [[ "$frce_sn" =~ ^[Ss]$ ]]; then
-  log "Foi requerido o suporte a relatorios/impressos do fortes-ce"
-  PACKAGES_DEPS+=("frce")
-fi
-
-echo "───────────────  LAZREPORT  ──────────────"
-echo "Você deseja incluir os formularios/impressos que usam o 'LazReport'?"
-echo "(digite 'n' para não ou ENTER para sim)"
-echo -n " "
-read lazreport_sn
-lazreport_sn="${lazreport_sn:-S}"
-if [[ "$lazreport_sn" =~ ^[Ss]$ ]]; then
-  log "Foi requerido o suporte a relatorios/impressos do lazreport"
-  PACKAGES_DEPS+=("lazfpreportdesign")
-fi
-
-echo "─────────────────  FPDF  ─────────────────"
-echo "Você deseja incluir os formularios/impressos que usam 'FPDF'?"
-echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 'n' para não ou ENTER para sim)"
-echo -n " "
-read fpdf_sn
-fpdf_sn="${fpdf_sn:-S}"
-if [[ "$fpdf_sn" =~ ^[Ss]$ ]]; then
-  log "Foi requerido o suporte a relatorios/impressos do fpdf"
-fi
-
-echo "───────────  MATRICIAL ESC-POS  ──────────"
-echo "Você deseja incluir suporte aos formularios/impressos que usam impressoras matriciais compativeis com 'EscPos'?"
-echo "Em caso positivo, poderei instalar os relatorios que utilizam ele."
-echo "(digite 'n' para não ou ENTER para sim)"
-echo -n " "
-read escpos_sn
-escpos_sn="${escpos_sn:-S}"
-if [[ "$escpos_sn" =~ ^[Ss]$ ]]; then
-  log "Foi requerido o suporte a relatorios/impressos que usam escpos"
-fi
-
-echo "──────────  COMPONENTES VISUAIS  ─────────"
-detected_widget="$(detect_lazarus_widgetset)"
-echo "Qual widgetset usar na recompilação da IDE do Lazarus?"
-echo "(ENTER para usar o detectado: $detected_widget, ou digite gtk2, qt5 ou qt6)"
-echo -n " "
-read resp_widget
-if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
-  # por engano digitou 'S' então apaga
-  echo " Resposta ignorada"
-  resp_widget=""
-fi
-
-if [ -z "$resp_widget" ]; then
-  resp_widget="$detected_widget"
-fi
-if [ "$resp_widget" = "gtk" ]; then
-  resp_widget="gtk2"
-fi
-
-if [ -n "$resp_widget" ]; then
-  log " Widgetset da IDE: $resp_widget"
-  vlaz_build_widgetset="--widgetset=$resp_widget "
-fi
-
-# Verificar se o arquivo /usr/bin/windres existe
-# Aqui tá uma coisa que eu não gosto, instalar suporte
-# a 32bits por causa de apenas um componente.
-# Ignore a instalação deste tipo de suporte e alguns
-# componentes não serão instalados.
-install_windres
-
-if [ ! -f /usr/bin/windres ]; then
-  echo " Você deseja incluir suporte a componentes ligados ao windres(S/n)?"
-  echo "windres é um utilitario que ajuda converter os arquivos de recursos(geralmente .rc) tipico de Windows/Delphi para Lazarus"
-  echo " Ele requeirerá o pacote 'mingw-w64' que permite ao Linux 64bits executar programas de 32bits e isso vai poluir seu sistema, porém sem ele, alguns componentes do ACBr não compilam."
-  echo "(digite 'n' para não ou ENTER para sim)"
-  read windres_sn
-  windres_sn="${windres_sn:-S}"
-  if [[ "$windres_sn" =~ ^[Ss]$ ]]; then
-    echo " Instalando mingw-w64..."
-    sudo apt update && sudo apt install -y mingw-w64
-    if [ $? -ne 0 ]; then
-      log " Falha ao instalar o pacote mingw-w64. Verifique sua conexão ou permissões."
-      exit 1
-    else
-      install_windres
-      if [ $? -ne 0 ]; then
-        log " Falha ao criar link simbolico para /usr/bin/windres. Verifique permissões."
-        exit 2
-      fi
-    fi
-  fi
-fi
 
 #
 # INICIO DO PROCESSAMENTO
 #
-
-log " Iniciando instalação..."
 
 log " Verificando se todos os pacotes .lpk existem..."
 for LPK in "${LPK_FILES[@]}"; do
@@ -742,6 +896,8 @@ for runtime_pkg in "${RUNTIME_PACKAGES[@]}"; do
     fi
     exit 1
   fi
+  # Synapse e demais runtime: registra via link (nao aceitam --add-package)
+  run_lazbuild --add-package-link "$full_path" || log " Aviso: --add-package-link falhou para $full_path"
 done
 if [ -z "$vcaptura_erro" ]; then
   log " Pacotes de runtime compilados com sucesso."

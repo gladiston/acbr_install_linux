@@ -79,31 +79,14 @@ PACKAGES=(
     "dbexport/lazdbexport.lpk"
     "multithreadprocs/multithreadprocslaz.lpk"
     "onlinepackagemanager/onlinepackagemanager.lpk"
+    "memds/memdslaz.lpk"
+    "datetimectrls/datetimectrls.lpk"
+    "datetimectrls/design/datetimectrlsdsgn.lpk"
+    "iconfinder/packages/runtime/iconfinder_pkg.lpk"
+    "iconfinder/packages/designtime/iconfinder_dsgn_pkg.lpk"
+    "todolist/todolistlaz.lpk"
+    "datadict/lazdatadict.lpk"
 )
-
-echo ""
-echo "────────── OPÇÕES DE DOCKING ─────────"
-echo "Deseja ativar o docking na IDE (S/N)?"
-echo "Pressione ENTER para manter o padrão (N)"
-echo -n "> "
-read -r resp_docking
-if [[ "$resp_docking" =~ ^[Ss]$ ]]; then
-    PACKAGES+=(
-        "anchordocking/anchordocking.lpk"
-        "anchordocking/design/anchordockingdsgn.lpk"
-    )
-fi
-
-echo ""
-echo "Deseja ativar o docking de formulário na IDE (S/N)?"
-echo "Pressione ENTER para manter o padrão (N)"
-echo -n "> "
-read -r resp_form_docking
-if [[ "$resp_form_docking" =~ ^[Ss]$ ]]; then
-    PACKAGES+=(
-        "dockedformeditor/dockedformeditor.lpk"
-    )
-fi
 
 show_packages() {
     local pkg

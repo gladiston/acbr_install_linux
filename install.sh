@@ -30,11 +30,11 @@ run_script() {
 
 install_all() {
   run_script "lpkinstall-builtin.sh"
+  run_script "lpkinstall-curadoria.sh"
   run_script "lpkinstall-zeos.sh"
   run_script "lpkinstall-frce.sh"
   run_script "lpkinstall-stax.sh"
   run_script "lpkinstall-powerpdf.sh"
-  run_script "lpkinstall-synapse.sh"
   run_script "lpkinstall-acbr.sh"
 }
 
@@ -43,44 +43,30 @@ while true; do
   echo "=============================================="
   echo "Menu de instalação de pacotes do Lazarus"
   echo "=============================================="
-  echo "1. Instalar os pactes basicos"
-  echo "2. Instalar o Zeos(banco de dados)"
-  echo "3. Instalar o Fortes Community Edition(relatórios)"
-  echo "4. Instalar o Stax"
-  echo "5. Instalar o PowerPDF"
-  echo "6. Instalar o Synapse(depende de stax)"
-  echo "7. Instalar o ACBR(depende das demais opcoes acima)"
-  echo "8. Instalar tudo"
+  echo "1. Instalar os pacotes basicos"
+  echo "2. Instalar Docking"
+  echo "3. Instalar o Zeos(banco de dados)"
+  echo "4. Instalar o Fortes Community Edition(relatórios)"
+  echo "5. Instalar o Stax"
+  echo "6. Instalar o PowerPDF"
+  echo "7. Instalar o ACBr(inclui Synapse embutido; depende das demais opcoes acima)"
+  echo "8. Instalar curadoria do editor"
+  echo "9. Instalar tudo"
   echo "X. Sair"
   echo "=============================================="
   echo -n "Escolha uma opção: "
   read -r opcao
 
   case "$opcao" in
-    1)
-      run_script "lpkinstall-builtin.sh"
-      ;;
-    2)
-      run_script "lpkinstall-zeos.sh"
-      ;;
-    3)
-      run_script "lpkinstall-frce.sh"
-      ;;
-    4)
-      run_script "lpkinstall-stax.sh"
-      ;;
-    5)
-      run_script "lpkinstall-powerpdf.sh"
-      ;;
-    6)
-      run_script "lpkinstall-synapse.sh"
-      ;;
-    7)
-      run_script "lpkinstall-acbr.sh"
-      ;;
-    8)
-      install_all
-      ;;
+    1) run_script "lpkinstall-builtin.sh" ;;
+    2) run_script "lpkinstall-docking.sh" ;;
+    3) run_script "lpkinstall-zeos.sh" ;;
+    4) run_script "lpkinstall-frce.sh" ;;
+    5) run_script "lpkinstall-stax.sh" ;;
+    6) run_script "lpkinstall-powerpdf.sh" ;;
+    7) run_script "lpkinstall-acbr.sh" ;;
+    8) run_script "lpkinstall-curadoria.sh" ;;
+    9) install_all ;;
     [Xx])
       echo "Saindo."
       exit 0

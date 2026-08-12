@@ -1,5 +1,5 @@
 #!/bin/bash
-# lpkinstall-powerpdf.sh - Baixa, compila e instala o pacote PowerPDF no Lazarus
+# lpkinstall-powerpdf.sh - Baixa e instala o PowerPDF no Lazarus (OPM)
 
 set -e
 set -o pipefail
@@ -8,15 +8,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lpkinstall-common.sh
 source "$SCRIPT_DIR/lpkinstall-common.sh"
 
-POWERPDF_SVN_URL="svn://svn.code.sf.net/p/lazarus-ccr/svn/components/powerpdf"
+POWERPDF_OPM_ZIP="PowerPDF.zip"
+POWERPDF_LPK_REL="pack_powerpdf.lpk"
 
 check_lazarus_closed() {
   local running
-
   if ! command -v pgrep >/dev/null 2>&1; then
     return 0
   fi
-
   running="$(pgrep -u "$(id -u)" -af '(^|/)(lazarus|startlazarus)([[:space:]]|$)' || true)"
   if [ -n "$running" ]; then
     echo "Erro: a IDE Lazarus parece estar aberta."
@@ -27,18 +26,7 @@ check_lazarus_closed() {
   fi
 }
 
-ensure_svn() {
-  if command -v svn >/dev/null 2>&1; then
-    return 0
-  fi
-
-  echo "Erro: não encontrei o executável 'svn' no PATH."
-  echo "Instale o Subversion e execute este script novamente."
-  exit 1
-}
-
 LAZARUS_DIR="${1:-$HOME/fpcupdeluxe/lazarus}"
-
 if [ ! -d "$LAZARUS_DIR" ]; then
   echo "Erro: pasta do Lazarus não encontrada:"
   echo "  $LAZARUS_DIR"
@@ -47,7 +35,6 @@ fi
 
 LAZBUILD="$LAZARUS_DIR/lazbuild"
 LAZ_BIN="$LAZARUS_DIR/lazarus"
-
 check_lazarus_closed
 
 if [ ! -x "$LAZBUILD" ]; then
@@ -59,7 +46,7 @@ fi
 
 LAZARUS_COMPONENTS="$LAZARUS_DIR/components"
 POWERPDF_DIR="$LAZARUS_COMPONENTS/powerpdf"
-POWERPDF_LPK="$POWERPDF_DIR/pack_powerpdf.lpk"
+POWERPDF_LPK="$POWERPDF_DIR/$POWERPDF_LPK_REL"
 
 if [ ! -d "$LAZARUS_COMPONENTS" ]; then
   echo "Erro: diretório de componentes do Lazarus não encontrado:"
@@ -83,20 +70,9 @@ if [ -n "$resp_widget" ]; then
   LAZBUILD_WIDGETSET_ARGS=(--widgetset="$resp_widget")
 fi
 
-ensure_svn
-
-if [ -e "$POWERPDF_DIR" ] && ! svn info "$POWERPDF_DIR" >/dev/null 2>&1; then
-  echo "Erro: já existe uma pasta powerpdf, mas ela não é uma working copy SVN válida:"
-  echo "  $POWERPDF_DIR"
+if ! ensure_opm_zip "$POWERPDF_OPM_ZIP" "$POWERPDF_DIR" "$POWERPDF_LPK_REL"; then
+  echo "Erro: não foi possível obter PowerPDF de ${OPM_BASE_URL}${POWERPDF_OPM_ZIP}"
   exit 1
-fi
-
-if [ ! -d "$POWERPDF_DIR/.svn" ]; then
-  cd "$LAZARUS_COMPONENTS"
-  svn checkout "$POWERPDF_SVN_URL" "$POWERPDF_DIR"
-else
-  svn cleanup "$POWERPDF_DIR" || true
-  svn update --accept theirs-full "$POWERPDF_DIR"
 fi
 
 clean_component_build_artifacts "PowerPDF" "$LAZARUS_COMPONENTS" "$POWERPDF_DIR" "lib"
@@ -104,7 +80,6 @@ clean_component_build_artifacts "PowerPDF" "$LAZARUS_COMPONENTS" "$POWERPDF_DIR"
 if [ ! -f "$POWERPDF_LPK" ]; then
   echo "Erro: pacote PowerPDF não encontrado:"
   echo "  $POWERPDF_LPK"
-  echo "Verifique se POWERPDF_SVN_URL aponta para o caminho correto."
   exit 1
 fi
 
@@ -112,7 +87,7 @@ echo
 echo "=============================================="
 echo "PowerPDF no Lazarus"
 echo "Lazarus : $LAZARUS_DIR"
-echo "Comp.   : $LAZARUS_COMPONENTS"
+echo "Fonte   : ${OPM_BASE_URL}${POWERPDF_OPM_ZIP}"
 echo "Widget  : ${resp_widget:-padrao}"
 echo "Pacote  : $POWERPDF_LPK"
 echo "=============================================="

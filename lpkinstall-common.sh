@@ -185,3 +185,232 @@ clean_component_build_artifacts() {
     safe_remove_build_dir "$component_name" "$anchor_dir" "$component_dir" "$rel"
   done
 }
+# --- OPM (packages.lazarus-ide.org) ---
+
+OPM_BASE_URL="https://packages.lazarus-ide.org/"
+
+opm_marker_path() {
+  printf '%s/.acbr_opm_source\n' "$1"
+}
+
+opm_package_ready() {
+  local dest_dir="$1"
+  local zip_name="$2"
+  local relative_lpk="$3"
+  local marker lpk
+
+  marker="$(opm_marker_path "$dest_dir")"
+  lpk="$dest_dir/${relative_lpk}"
+  [ -f "$marker" ] && [ -f "$lpk" ] || return 1
+  grep -qiF "$zip_name" "$marker"
+}
+
+find_file_recursive() {
+  local root_dir="$1"
+  local file_name="$2"
+  find "$root_dir" -type f -iname "$file_name" 2>/dev/null | head -n 1
+}
+
+collect_lpk_files() {
+  local root_dir="$1"
+  find "$root_dir" -type f -iname '*.lpk' \
+    ! -path '*/lib/*' ! -path '*/units/*' ! -path '*/.*/*' 2>/dev/null | sort
+}
+
+is_design_lpk() {
+  local lpk_path="$1"
+  local name
+  name="$(basename "$lpk_path" | tr '[:upper:]' '[:lower:]')"
+  local path_lc
+  path_lc="$(printf '%s' "$lpk_path" | tr '[:upper:]' '[:lower:]')"
+  [[ "$name" == *design* || "$name" == *dsgn* || "$name" == *_des.* ]] && return 0
+  [[ "$path_lc" == */ide/* ]] && return 0
+  return 1
+}
+
+# Imprime caminhos absolutos: preferred (csv ;) primeiro, depois demais descobertos (runtime antes de design).
+resolve_lpks_to_install() {
+  local dest_dir="$1"
+  local preferred_csv="${2:-}"
+  local -a preferred discovered runtime design out
+  local rel abs name p seen_key
+  declare -A seen=()
+
+  preferred=()
+  if [ -n "$preferred_csv" ]; then
+    IFS=';' read -ra preferred <<< "$preferred_csv"
+  fi
+
+  for rel in "${preferred[@]}"; do
+    rel="${rel//\\//}"
+    rel="$(_lpi_trim "$rel")"
+    [ -z "$rel" ] && continue
+    abs="$dest_dir/$rel"
+    if [ ! -f "$abs" ]; then
+      name="$(basename "$rel")"
+      abs="$(find_file_recursive "$dest_dir" "$name" || true)"
+    fi
+    if [ -n "$abs" ] && [ -f "$abs" ]; then
+      seen_key="$(printf '%s' "$abs" | tr '[:upper:]' '[:lower:]')"
+      if [ -z "${seen[$seen_key]:-}" ]; then
+        seen[$seen_key]=1
+        out+=("$abs")
+      fi
+    fi
+  done
+
+  mapfile -t discovered < <(collect_lpk_files "$dest_dir")
+  runtime=()
+  design=()
+  for p in "${discovered[@]}"; do
+    [ -z "$p" ] && continue
+    if is_design_lpk "$p"; then
+      design+=("$p")
+    else
+      runtime+=("$p")
+    fi
+  done
+  for p in "${runtime[@]}" "${design[@]}"; do
+    seen_key="$(printf '%s' "$p" | tr '[:upper:]' '[:lower:]')"
+    if [ -z "${seen[$seen_key]:-}" ]; then
+      seen[$seen_key]=1
+      out+=("$p")
+    fi
+  done
+
+  printf '%s\n' "${out[@]}"
+}
+
+# Usa LAZBUILD / LAZBUILD_PCP_ARGS / LAZBUILD_WIDGETSET_ARGS se existirem; senao so LAZBUILD.
+_lpi_run_lazbuild() {
+  local -a cmd
+  cmd=("$LAZBUILD")
+  if declare -p LAZBUILD_PCP_ARGS >/dev/null 2>&1; then
+    cmd+=("${LAZBUILD_PCP_ARGS[@]}")
+  fi
+  if declare -p LAZBUILD_WIDGETSET_ARGS >/dev/null 2>&1; then
+    cmd+=("${LAZBUILD_WIDGETSET_ARGS[@]}")
+  fi
+  cmd+=("$@")
+  _lpi_log "Comando: ${cmd[*]}"
+  "${cmd[@]}"
+}
+
+# Retorna 0=ok, 1=falha, 2=aviso
+install_lpk_file() {
+  local lpk_path="$1"
+
+  if [ ! -f "$lpk_path" ]; then
+    _lpi_log "Aviso: lpk ausente: $lpk_path"
+    return 1
+  fi
+
+  _lpi_log "Instalando: $lpk_path"
+  if _lpi_run_lazbuild --add-package "$lpk_path"; then
+    return 0
+  fi
+
+  _lpi_log "Aviso: --add-package falhou; compilando..."
+  if ! _lpi_run_lazbuild "$lpk_path"; then
+    _lpi_log "ERRO: falha ao compilar: $lpk_path"
+    return 1
+  fi
+
+  if _lpi_run_lazbuild --add-package "$lpk_path"; then
+    return 0
+  fi
+
+  _lpi_log "Tentando --add-package-link (pacote runtime)..."
+  if _lpi_run_lazbuild --add-package-link "$lpk_path"; then
+    return 0
+  fi
+
+  _lpi_log "Aviso: compilou, mas nao registrou: $lpk_path"
+  return 2
+}
+
+package_root_from_found_lpk() {
+  local found_lpk_abs="$1"
+  local relative_lpk="$2"
+  local rel parts depth p i
+
+  rel="${relative_lpk//'\'/'/'}"
+  IFS='/' read -ra parts <<< "$rel"
+  depth="${#parts[@]}"
+  p="$found_lpk_abs"
+  for ((i = 0; i < depth; i++)); do
+    p="$(dirname "$p")"
+  done
+  printf '%s\n' "$p"
+}
+
+# Baixa zip do OPM e instala em dest_dir. relative_lpk relativo a raiz do pacote.
+ensure_opm_zip() {
+  local zip_file_name="$1"
+  local dest_dir="$2"
+  local relative_lpk="$3"
+  local url tmp_root archive extract_dir found_lpk pkg_root leaf marker
+
+  relative_lpk="${relative_lpk//'\'/'/'}"
+
+  if opm_package_ready "$dest_dir" "$zip_file_name" "$relative_lpk"; then
+    _lpi_log "OPM ja presente ($zip_file_name): $dest_dir"
+    return 0
+  fi
+
+  url="${OPM_BASE_URL}${zip_file_name}"
+  tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/acbr_opm.XXXXXX")"
+  archive="$tmp_root/$zip_file_name"
+  extract_dir="$tmp_root/extract"
+  mkdir -p "$extract_dir"
+
+  _lpi_log "Baixando: $url"
+  if ! curl -L --fail --retry 3 --connect-timeout 30 -o "$archive" "$url"; then
+    _lpi_log "Aviso: download OPM falhou: $url"
+    rm -rf "$tmp_root"
+    return 1
+  fi
+
+  if ! unzip -q -o "$archive" -d "$extract_dir"; then
+    _lpi_log "Aviso: extracao OPM falhou: $archive"
+    rm -rf "$tmp_root"
+    return 1
+  fi
+
+  leaf="$(basename "$relative_lpk")"
+  found_lpk="$(find_file_recursive "$extract_dir" "$leaf" || true)"
+  if [ -z "$found_lpk" ]; then
+    _lpi_log "Aviso: $leaf nao encontrado em $zip_file_name"
+    rm -rf "$tmp_root"
+    return 1
+  fi
+
+  pkg_root="$(package_root_from_found_lpk "$found_lpk" "$relative_lpk")"
+  if [ -z "$pkg_root" ] || [ ! -d "$pkg_root" ]; then
+    _lpi_log "Aviso: raiz do pacote OPM invalida para $zip_file_name"
+    rm -rf "$tmp_root"
+    return 1
+  fi
+
+  if [ -e "$dest_dir" ]; then
+    _lpi_log "Substituindo pasta existente por OPM $zip_file_name..."
+    rm -rf "$dest_dir"
+  fi
+  mv "$pkg_root" "$dest_dir"
+
+  marker="$(opm_marker_path "$dest_dir")"
+  {
+    echo "$url"
+    echo "instalado em $(date)"
+  } >"$marker"
+
+  if [ -f "$dest_dir/$relative_lpk" ]; then
+    _lpi_log "OPM instalado: $url -> $dest_dir"
+    rm -rf "$tmp_root"
+    return 0
+  fi
+
+  _lpi_log "Aviso: apos extrair OPM, nao achei $dest_dir/$relative_lpk"
+  rm -rf "$tmp_root"
+  return 1
+}

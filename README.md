@@ -2,7 +2,7 @@
 
 Este repositório reúne scripts para preparar uma instalação do Lazarus no Linux com pacotes usados em projetos ACBr. A ideia é automatizar o trabalho repetitivo de baixar bibliotecas, compilar pacotes `.lpk`, registrar pacotes de design-time e recompilar a IDE Lazarus ao final de cada etapa.
 
-O script principal é o `install.sh`, que abre um menu para instalar os pacotes básicos do Lazarus e bibliotecas auxiliares como Zeos, FortesReport-CE, fpStax, PowerPDF, Synapse e ACBr.
+O script principal é o `install.sh`, que abre um menu para instalar os pacotes básicos do Lazarus e bibliotecas auxiliares como Zeos, FortesReport-CE, fpStax, PowerPDF e ACBr (Synapse vem embutido no ACBr).
 
 ## Objetivo
 
@@ -11,7 +11,7 @@ Estes scripts foram criados para facilitar a montagem de um ambiente Lazarus/FPC
 Eles ajudam a:
 
 - localizar a instalação do Lazarus e o executável `lazbuild`;
-- baixar ou atualizar bibliotecas externas via Git ou SVN;
+- baixar ou atualizar bibliotecas externas via Git, SVN ou OPM (`packages.lazarus-ide.org`);
 - compilar pacotes de runtime;
 - instalar pacotes de design-time na IDE;
 - recompilar o Lazarus para atualizar a paleta de componentes;
@@ -20,13 +20,26 @@ Eles ajudam a:
 
 ## Pacotes atendidos
 
-- `lpkinstall-builtin.sh`: instala pacotes nativos úteis do Lazarus, como LazReport, FPReport, Online Package Manager e opcionais de docking.
-- `lpkinstall-zeos.sh`: baixa/atualiza o ZeosLib, compila os pacotes de runtime e instala o pacote de design-time.
-- `lpkinstall-frce.sh`: baixa/atualiza o FortesReport-CE, permite escolher a branch e instala o pacote no Lazarus.
-- `lpkinstall-stax.sh`: baixa/atualiza e instala o fpStax.
-- `lpkinstall-powerpdf.sh`: baixa/atualiza e instala o PowerPDF a partir do Lazarus CCR.
-- `lpkinstall-synapse.sh`: baixa/atualiza e compila o pacote runtime Synapse.
-- `lpkinstall-acbr.sh`: baixa/atualiza o ACBr, compila os pacotes selecionados, instala os pacotes de design-time e recompila a IDE.
+- `lpkinstall-builtin.sh`: pacotes nativos (LazReport, FPReport, OPM, memdslaz, datetimectrlsdsgn, iconfinder, todolistlaz, lazdatadict).
+- `lpkinstall-docking.sh`: docking da IDE (AnchorDocking + DockedFormEditor).
+- `lpkinstall-curadoria.sh`: curadoria do editor (14 pacotes OPM incl. HtmlViewer + nativos memdslaz/datetimectrls); após extrair, instala todos os `.lpk` runtime/design.
+- `lpkinstall-zeos.sh`: ZeosLib (Git).
+- `lpkinstall-frce.sh`: FortesReport-CE (Git).
+- `lpkinstall-stax.sh`: fpStax (OPM `FpStax.zip`).
+- `lpkinstall-powerpdf.sh`: PowerPDF (OPM `PowerPDF.zip`).
+- `lpkinstall-acbr.sh`: ACBr (SVN; fallback Git `MirrorProjetoACBr`); Synapse embutido (`synalist`).
+
+## Fontes de download
+
+| Pacote | Fonte principal | Fallback |
+|--------|-----------------|----------|
+| ACBr | SVN SourceForge (`trunk2`) | Git `https://github.com/MirrorProjetoACBr/ACBr.git` |
+| Synapse | Embutido no ACBr (`synalist`) | — |
+| FortesReport-CE | Git | — |
+| Zeos | Git | — |
+| PowerPDF | OPM `PowerPDF.zip` | — |
+| Stax | OPM `FpStax.zip` | — |
+| Curadoria | OPM (14 pacotes) + nativos Lazarus | — |
 
 ## Requisitos
 
@@ -34,8 +47,9 @@ Eles ajudam a:
 - Lazarus/FPC já instalados.
 - `lazbuild` funcional dentro da pasta do Lazarus.
 - A IDE Lazarus deve estar fechada antes de executar os instaladores.
-- `git` para bibliotecas obtidas por Git.
-- `svn` para ACBr e PowerPDF.
+- `git` (Zeos, Fortes, fallback do ACBr) e/ou `svn` (ACBr).
+- `curl` e `unzip` para pacotes OPM.
+- Rede para `https://packages.lazarus-ide.org/` (Stax, PowerPDF, curadoria).
 - `sudo` disponível para instalar dependências quando algum script solicitar.
 - Em alguns pacotes do ACBr pode ser necessário `mingw-w64`, usado para disponibilizar o utilitário `windres`.
 
@@ -52,61 +66,37 @@ Ambiente usado como base:
 - `git` e `svn` disponíveis no sistema;
 - recompilação da IDE Lazarus com widgetset padrão ou, quando selecionado, `gtk`, `qt5` ou `qt6`.
 
-Também há detecção parcial para instalações do Lazarus em `~/lazarus`. Se seu ambiente for diferente, por exemplo outra distribuição, Lazarus instalado por pacote da distribuição, outro caminho de instalação ou outro widgetset, revise os caminhos sugeridos pelos scripts antes de confirmar a instalação.
-
-O uso mais comum pressupõe uma instalação do Lazarus em:
-
-```bash
-~/fpcupdeluxe/lazarus
-```
-
-Alguns scripts também detectam:
-
-```bash
-~/lazarus
-```
-
-Quando a instalação estiver em outro local, execute o script individual informando o caminho do Lazarus como primeiro parâmetro.
+Também há detecção parcial para instalações do Lazarus em `~/lazarus`. Se seu ambiente for diferente, revise os caminhos sugeridos pelos scripts antes de confirmar a instalação.
 
 ## Como usar
-
-Clone o repositório e dê permissão de execução aos scripts:
 
 ```bash
 git clone https://github.com/gladiston/acbr_install_linux.git
 cd acbr_install_linux
 chmod +x *.sh
-```
-
-Para usar o menu principal:
-
-```bash
 ./install.sh
 ```
 
-O menu permite instalar cada grupo separadamente ou executar a instalação completa. A instalação completa segue a ordem esperada para atender dependências antes de instalar o ACBr:
+Menu:
 
-1. pacotes básicos do Lazarus;
-2. Zeos;
-3. FortesReport-CE;
-4. fpStax;
-5. PowerPDF;
-6. Synapse;
-7. ACBr.
+1. Pacotes básicos
+2. Docking
+3. Zeos
+4. Fortes CE
+5. Stax
+6. PowerPDF
+7. ACBr (inclui Synapse embutido)
+8. Curadoria do editor (OPM)
+9. Instalar tudo (nessa ordem)
+X. Sair
 
-Para executar apenas um instalador específico:
+A instalação completa inclui a curadoria e segue a ordem de dependências antes do ACBr.
+
+Para um instalador específico:
 
 ```bash
 ./lpkinstall-zeos.sh
-./lpkinstall-frce.sh
-./lpkinstall-acbr.sh
-```
-
-Se o Lazarus estiver fora do caminho padrão:
-
-```bash
-./lpkinstall-zeos.sh /caminho/para/lazarus
-./lpkinstall-frce.sh /caminho/para/lazarus
+./lpkinstall-curadoria.sh
 ./lpkinstall-acbr.sh /caminho/para/lazarus
 ```
 
@@ -116,7 +106,7 @@ Se o Lazarus estiver fora do caminho padrão:
 - Não execute o instalador do ACBr como `root` ou com `sudo`; ele solicitará `sudo` apenas quando precisar instalar dependências do sistema.
 - Os repositórios das bibliotecas são baixados dentro de `components` da própria instalação do Lazarus.
 - O ACBr é mantido em `components/acbr`.
-- O instalador do ACBr pergunta quais grupos de componentes devem ser incluídos, como comércio, financeiro, fiscal e relatórios.
+- O instalador do ACBr faz todas as perguntas primeiro (grupos, widgetset, atualizar ou não), confirma o resumo e só então baixa/instala sem novas perguntas.
 - Os scripts recompilam a IDE Lazarus para que os componentes instalados apareçam na paleta.
 - Ao final, abra novamente o Lazarus para conferir os pacotes instalados.
 
