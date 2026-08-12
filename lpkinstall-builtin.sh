@@ -7,6 +7,10 @@
 set -e
 set -o pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lpkinstall-common.sh
+source "$SCRIPT_DIR/lpkinstall-common.sh"
+
 log() {
     echo "$*"
 }
@@ -86,6 +90,9 @@ PACKAGES=(
     "iconfinder/packages/designtime/iconfinder_dsgn_pkg.lpk"
     "todolist/todolistlaz.lpk"
     "datadict/lazdatadict.lpk"
+    "anchordocking/anchordocking.lpk"
+    "anchordocking/design/anchordockingdsgn.lpk"
+    "dockedformeditor/dockedformeditor.lpk"
 )
 
 show_packages() {
@@ -119,16 +126,8 @@ LAZBUILD_WIDGETSET_ARGS=()
 [ -n "$resp_widget" ] && LAZBUILD_WIDGETSET_ARGS=(--widgetset="$resp_widget")
 
 # -------------------------------------------------
-# 4) Funções de instalação e recompilação
+# 4) Recompilação
 # -------------------------------------------------
-install_pkg() {
-    local pkgfile="$1"
-
-    log ". Registrando: $pkgfile"
-    log "Comando: $LAZBUILD ${LAZBUILD_PCP_ARGS[*]} ${LAZBUILD_WIDGETSET_ARGS[*]} --add-package \"$pkgfile\""
-    "$LAZBUILD" "${LAZBUILD_PCP_ARGS[@]}" "${LAZBUILD_WIDGETSET_ARGS[@]}" --add-package "$pkgfile"
-}
-
 rebuild_ide() {
     log "----------------------------------------------"
     log "Recompilando a IDE Lazarus para aplicar os pacotes na paleta..."
@@ -149,7 +148,16 @@ log "=============================================="
 for p in "${PACKAGES[@]}"; do
     FULL_LPK="$LAZARUS_COMPONENTS/$p"
     if [ -f "$FULL_LPK" ]; then
-        install_pkg "$FULL_LPK"
+        # Runtime-only (ex.: iconfinder_pkg) nao aceita --add-package;
+        # install_lpk_file faz fallback para compile + --add-package-link.
+        set +e
+        install_lpk_file "$FULL_LPK"
+        st=$?
+        set -e
+        if [ "$st" -ne 0 ]; then
+            log "ERRO: falha ao instalar: $FULL_LPK"
+            exit 1
+        fi
     else
         log "Aviso: Pacote não encontrado: $p"
     fi

@@ -70,22 +70,9 @@ ensure_git() {
 }
 
 list_remote_zeos_branches() {
-  if [ -e "$ZEOS_DIR" ] && [ ! -d "$ZEOS_DIR/.git" ]; then
-    echo "Erro: já existe uma pasta zeoslib, mas ela não é um repositório git:"
-    echo "  $ZEOS_DIR"
-    exit 1
-  fi
-
-  if [ ! -d "$ZEOS_DIR/.git" ]; then
-    echo
-    echo "Repositório Zeos ainda não existe. Clonando para listar branches remotas..."
-    cd "$LAZARUS_COMPONENTS"
-    git clone "$ZEOS_REPO_URL"
-  fi
-
-  cd "$ZEOS_DIR"
-  git fetch --all --prune
-  git branch -r
+  echo
+  echo "Branches remotas disponíveis (sem clonar):"
+  git ls-remote --heads "$ZEOS_REPO_URL"
 }
 
 select_zeos_branch() {
@@ -114,8 +101,6 @@ select_zeos_branch() {
       ZEOS_BRANCH="origin/8.0.0-stable"
       ;;
     3|"outra"|"Outra"|"OUTRA")
-      echo
-      echo "Branches remotas disponíveis:"
       list_remote_zeos_branches
       echo
       echo -n "Digite a branch remota desejada, por exemplo origin/8.0-patches: "
@@ -123,6 +108,9 @@ select_zeos_branch() {
       if [ -z "$ZEOS_BRANCH" ]; then
         echo "Erro: branch do Zeos não informada."
         exit 1
+      fi
+      if [[ "$ZEOS_BRANCH" != origin/* && "$ZEOS_BRANCH" != */* ]]; then
+        ZEOS_BRANCH="origin/$ZEOS_BRANCH"
       fi
       ;;
     4|"origin/HEAD")
@@ -234,16 +222,13 @@ ensure_zeos_repo() {
 
 ensure_git
 select_zeos_branch
-ensure_zeos_repo
-patch_zeos_fpc_size_t
-clean_component_build_artifacts "Zeos" "$LAZARUS_COMPONENTS" "$ZEOS_DIR" "packages/lazarus/lib"
 
 echo
 echo "────────── COMPONENTES VISUAIS ─────────"
 echo "Você deseja usar um widgetset específico ao chamar o lazbuild?"
 echo "Pressione ENTER para manter o padrão ou digite: gtk, qt5, qt6"
 echo -n "> "
-read resp_widget
+read -r resp_widget
 if [[ "$resp_widget" =~ ^[Ss]$ ]]; then
   # Por engano digitou 'S' então apaga, seguindo o comportamento do instalador ACBr.
   echo "Resposta ignorada"
@@ -279,6 +264,27 @@ ensure_fpc() {
 }
 
 ensure_fpc
+
+echo
+echo "=============================================="
+echo "Resumo Zeos (perguntas concluídas)"
+echo "Lazarus : $LAZARUS_DIR"
+echo "Fonte   : $ZEOS_REPO_URL"
+echo "Branch  : $ZEOS_BRANCH"
+echo "Widget  : ${resp_widget:-padrao}"
+echo "Destino : $ZEOS_DIR"
+echo "=============================================="
+echo -n "Confirmar e iniciar download/instalação (sem mais perguntas) (S/n)? "
+read -r resp_confirm
+resp_confirm="${resp_confirm:-S}"
+if [[ ! "$resp_confirm" =~ ^[Ss]$ ]]; then
+  echo "Instalação do Zeos cancelada."
+  exit 0
+fi
+
+ensure_zeos_repo
+patch_zeos_fpc_size_t
+clean_component_build_artifacts "Zeos" "$LAZARUS_COMPONENTS" "$ZEOS_DIR" "packages/lazarus/lib"
 
 ZEOS_LAZARUS_DIR="$ZEOS_DIR/packages/lazarus"
 
@@ -334,12 +340,8 @@ rebuild_ide() {
 
 echo
 echo "=============================================="
-echo "Zeos no Lazarus"
-echo "Lazarus : $LAZARUS_DIR"
+echo "Instalando Zeos no Lazarus"
 echo "lazbuild: $LAZBUILD"
-echo "Comp.   : $LAZARUS_COMPONENTS"
-echo "Branch  : $ZEOS_BRANCH"
-echo "Widget  : ${resp_widget:-padrao}"
 echo "FPC     : $(command -v fpc)"
 echo "Zeos    : $ZEOS_LAZARUS_DIR"
 echo "=============================================="

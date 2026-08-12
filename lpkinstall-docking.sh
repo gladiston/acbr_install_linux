@@ -52,6 +52,18 @@ fi
 LAZBUILD="$LAZARUS_DIR/lazbuild"
 LAZ_BIN="$LAZARUS_DIR/lazarus"
 LAZARUS_COMPONENTS="$LAZARUS_DIR/components"
+
+# Chamada encadeada (ex.: redockask) pode fixar o PCP via ambiente.
+if [ -n "${ACBR_PCP:-}" ]; then
+  if [ "${ACBR_USE_PCP:-0}" = "1" ]; then
+    LAZBUILD_PCP_ARGS=(--pcp="$ACBR_PCP")
+    log "Usando PCP (ACBR_PCP/--pcp): $ACBR_PCP"
+  else
+    LAZBUILD_PCP_ARGS=()
+    log "Usando PCP (ACBR_PCP, sem --pcp): $ACBR_PCP"
+  fi
+fi
+
 check_lazarus_closed
 
 if [ ! -d "$LAZARUS_COMPONENTS" ]; then

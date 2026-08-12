@@ -20,8 +20,9 @@ Eles ajudam a:
 
 ## Pacotes atendidos
 
-- `lpkinstall-builtin.sh`: pacotes nativos (LazReport, FPReport, OPM, memdslaz, datetimectrlsdsgn, iconfinder, todolistlaz, lazdatadict).
-- `lpkinstall-docking.sh`: docking da IDE (AnchorDocking + DockedFormEditor).
+- `lpkinstall-builtin.sh`: pacotes nativos (LazReport, FPReport, OPM, memdslaz, datetimectrlsdsgn, iconfinder, todolistlaz, lazdatadict) + docking (AnchorDocking + DockedFormEditor).
+- `lpkinstall-docking.sh`: docking da IDE (AnchorDocking + DockedFormEditor); útil se quiser só o docking sem os demais básicos.
+- `download-lazideexportsettings.sh`: baixa o utilitário [lazIdeExportSettings](https://github.com/DomingoGP/lazIdeExportSettings) em Documentos; instalação/compilação opcional + atalho na Área de Trabalho.
 - `lpkinstall-curadoria.sh`: curadoria do editor (14 pacotes OPM incl. HtmlViewer + nativos memdslaz/datetimectrls); após extrair, instala todos os `.lpk` runtime/design.
 - `lpkinstall-zeos.sh`: ZeosLib (Git).
 - `lpkinstall-frce.sh`: FortesReport-CE (Git).
@@ -80,14 +81,17 @@ chmod +x *.sh
 Menu:
 
 1. Pacotes básicos
-2. Docking
-3. Zeos
-4. Fortes CE
-5. Stax
-6. PowerPDF
-7. ACBr (inclui Synapse embutido)
-8. Curadoria do editor (OPM)
-9. Instalar tudo (nessa ordem)
+2. Zeos
+3. Fortes CE
+4. Stax
+5. PowerPDF
+6. ACBr (inclui Synapse embutido)
+7. Curadoria do editor (OPM)
+8. Instalar tudo (nessa ordem)
+
+9. Docking
+A. Reperguntar docking no próximo start do Lazarus
+B. Download do lazIdeExportSettings
 X. Sair
 
 A instalação completa inclui a curadoria e segue a ordem de dependências antes do ACBr.
